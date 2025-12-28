@@ -1,0 +1,88 @@
+---
+description: Conventional Commits specification for all git commit messages
+globs: 
+alwaysApply: true
+---
+
+# Conventional Commits
+
+All commits in this project MUST follow the [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+
+## Commit Message Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+## Types
+
+Use one of the following types for each commit:
+
+| Type | Description |
+|------|-------------|
+| `feat` | A new feature (correlates with MINOR in SemVer) |
+| `fix` | A bug fix (correlates with PATCH in SemVer) |
+| `docs` | Documentation only changes |
+| `style` | Changes that do not affect the meaning of the code (white-space, formatting, etc.) |
+| `refactor` | A code change that neither fixes a bug nor adds a feature |
+| `perf` | A code change that improves performance |
+| `test` | Adding missing tests or correcting existing tests |
+| `build` | Changes that affect the build system or external dependencies |
+| `ci` | Changes to CI configuration files and scripts |
+| `chore` | Other changes that don't modify src or test files |
+
+## Rules
+
+1. **Type is required** - Every commit must start with a type
+2. **Description is required** - A short summary must follow the type
+3. **Use lowercase** - Type and description should be lowercase
+4. **No period at end** - Don't end the description with a period
+5. **Use imperative mood** - Write as a command: "add feature" not "added feature"
+6. **Scope is optional** - Use parentheses for scope: `feat(auth): add login`
+7. **Breaking changes** - Use `!` after type/scope or add `BREAKING CHANGE:` footer
+
+## Examples
+
+### Simple commit
+```
+feat: add user authentication
+```
+
+### Commit with scope
+```
+fix(api): handle null response from server
+```
+
+### Breaking change
+```
+feat(api)!: change authentication flow
+
+BREAKING CHANGE: JWT tokens now expire after 1 hour instead of 24 hours
+```
+
+### Commit with body
+```
+fix: prevent race condition in data fetching
+
+Introduce a request id and reference to latest request.
+Dismiss incoming responses other than from latest request.
+```
+
+### Documentation change
+```
+docs: update API documentation for auth endpoints
+```
+
+## When Generating Commit Messages
+
+When asked to create or suggest a commit message:
+1. Analyze the changes made
+2. Determine the appropriate type based on the nature of changes
+3. Identify a scope if changes are localized to a specific area
+4. Write a clear, concise description in imperative mood
+5. Add a body if additional context is needed
+6. Include `BREAKING CHANGE` footer if applicable
