@@ -42,6 +42,7 @@ The project is built with the following technologies:
 To get the project running on your local machine, follow these steps:
 
 1.  **Clone the repository:**
+
     ```sh
     git clone https://github.com/10xdevs/10xdevs-flashcards.git
     cd 10xdevs-flashcards
@@ -49,12 +50,15 @@ To get the project running on your local machine, follow these steps:
 
 2.  **Set up the Node.js version:**
     This project uses a specific version of Node.js. If you have `nvm` (Node Version Manager) installed, you can use the following command to switch to the correct version:
+
     ```sh
     nvm use
     ```
+
     If you don't have `nvm`, please install Node.js version `22.14.0`.
 
 3.  **Install dependencies:**
+
     ```sh
     npm install
     ```
