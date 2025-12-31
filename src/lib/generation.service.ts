@@ -1,9 +1,106 @@
 import crypto from "node:crypto";
+import { OpenRouterError, OpenRouterService } from "./openrouter.service";
 import type { SupabaseClient } from "../db/supabase.client";
 import type { FlashcardCandidateDto, GenerateFlashcardsResultDto } from "../types";
 
 const OPENROUTER_API_KEY = import.meta.env.OPENROUTER_API_KEY;
+const DEFAULT_MODEL = "mistralai/devstral-2512:free";
 const GENERATION_TIMEOUT_MS = 30000; // 30 seconds
+
+interface FlashcardResponse {
+  flashcard_candidates: FlashcardCandidateDto[];
+}
+
+const FLASHCARD_RESPONSE_SCHEMA = {
+  type: "object",
+  required: ["flashcard_candidates"],
+  properties: {
+    flashcard_candidates: {
+      type: "array",
+      minItems: 1,
+      items: {
+        type: "object",
+        required: ["front", "back"],
+        properties: {
+          front: { type: "string", minLength: 1 },
+          back: { type: "string", minLength: 1 },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
+  additionalProperties: false,
+} as const;
+
+let openRouterService: OpenRouterService | null = null;
+let flashcardResponseFormat: ReturnType<OpenRouterService["buildResponseFormat"]> | null = null;
+
+function ensureApiKey() {
+  if (!OPENROUTER_API_KEY?.trim()) {
+    throw new GenerationError("AI_SERVICE_ERROR", "Missing OpenRouter API key.");
+  }
+  return OPENROUTER_API_KEY.trim();
+}
+
+function getOpenRouterService() {
+  if (openRouterService) {
+    return openRouterService;
+  }
+  openRouterService = new OpenRouterService({
+    apiKey: ensureApiKey(),
+    defaultModel: DEFAULT_MODEL,
+  });
+  return openRouterService;
+}
+
+function getFlashcardResponseFormat(service: OpenRouterService) {
+  if (flashcardResponseFormat) {
+    return flashcardResponseFormat;
+  }
+  flashcardResponseFormat = service.buildResponseFormat("flashcard_candidates_payload", FLASHCARD_RESPONSE_SCHEMA);
+  return flashcardResponseFormat;
+}
+
+function mapToGenerationError(error: unknown): GenerationError {
+  if (error instanceof GenerationError) {
+    return error;
+  }
+  if (error instanceof OpenRouterError) {
+    if (error.type === "timeout" || error.type === "aborted") {
+      return new GenerationError("GENERATION_TIMEOUT", "Generation timed out after 30 seconds.");
+    }
+    return new GenerationError("AI_SERVICE_ERROR", error.message);
+  }
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return new GenerationError("GENERATION_TIMEOUT", "Generation timed out after 30 seconds.");
+  }
+  const message = error instanceof Error ? error.message : "An unknown error occurred.";
+  return new GenerationError("AI_SERVICE_ERROR", message);
+}
+
+function ensureNotAborted(signal?: AbortSignal) {
+  if (signal?.aborted) {
+    throw new GenerationError("GENERATION_TIMEOUT", "Generation timed out after 30 seconds.");
+  }
+}
+
+async function delay(ms: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timeoutId = setTimeout(() => resolve(), ms);
+    if (!signal) {
+      return;
+    }
+    const onAbort = () => {
+      clearTimeout(timeoutId);
+      reject(new GenerationError("GENERATION_TIMEOUT", "Generation timed out after 30 seconds."));
+    };
+    if (signal.aborted) {
+      onAbort();
+      return;
+    }
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+}
 
 /**
  * A custom error class for generation-specific failures.
@@ -22,10 +119,15 @@ async function getMd5Hash(text: string): Promise<string> {
   return crypto.createHash("md5").update(text).digest("hex");
 }
 
-async function callAIService(source_text: string): Promise<{ model: string; candidates: FlashcardCandidateDto[] }> {
+async function callAIService(
+  source_text: string,
+  signal?: AbortSignal
+): Promise<{ model: string; candidates: FlashcardCandidateDto[] }> {
+  ensureNotAborted(signal);
+
   if (import.meta.env.MOCK_AI_SERVICE === "true") {
-    // a delay to simulate network latency
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // simulate latency; respect cancellation to keep timeout behaviour consistent
+    await delay(1000, signal);
     return {
       model: "mock-gpt-4o-mini",
       candidates: [
@@ -42,15 +144,11 @@ async function callAIService(source_text: string): Promise<{ model: string; cand
     };
   }
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      response_format: { type: "json_object" },
+  const service = getOpenRouterService();
+  const response_format = getFlashcardResponseFormat(service);
+
+  try {
+    const result = await service.chat<FlashcardResponse>({
       messages: [
         {
           role: "system",
@@ -59,23 +157,19 @@ async function callAIService(source_text: string): Promise<{ model: string; cand
         },
         { role: "user", content: source_text },
       ],
-    }),
-  });
+      response_format,
+      signal,
+    });
 
-  if (!response.ok) {
-    throw new GenerationError("AI_SERVICE_ERROR", "The AI service failed to generate flashcards.");
+    const candidates = result.content.flashcard_candidates;
+    if (!Array.isArray(candidates) || candidates.length === 0) {
+      throw new GenerationError("AI_SERVICE_ERROR", "The AI service returned no flashcard candidates.");
+    }
+
+    return { model: result.model || DEFAULT_MODEL, candidates };
+  } catch (error) {
+    throw mapToGenerationError(error);
   }
-
-  const json = (await response.json()) as {
-    model: string;
-    choices: { message: { content: string } }[];
-  };
-
-  const model = json.model;
-  const content = JSON.parse(json.choices[0].message.content);
-  const candidates = content.flashcard_candidates as FlashcardCandidateDto[];
-
-  return { model, candidates };
 }
 
 export async function generateFlashcards({
@@ -90,15 +184,11 @@ export async function generateFlashcards({
   const startTime = Date.now();
   const source_hash = await getMd5Hash(source_text);
 
-  try {
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(
-        () => reject(new GenerationError("GENERATION_TIMEOUT", "Generation timed out after 30 seconds.")),
-        GENERATION_TIMEOUT_MS
-      )
-    );
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), GENERATION_TIMEOUT_MS);
 
-    const { model, candidates } = await Promise.race([callAIService(source_text), timeoutPromise]);
+  try {
+    const { model, candidates } = await callAIService(source_text, controller.signal);
 
     const generation_duration = Date.now() - startTime;
 
@@ -142,13 +232,16 @@ export async function generateFlashcards({
       flashcard_candidates: candidates,
     };
   } catch (error) {
+    const mapped = mapToGenerationError(error);
+    clearTimeout(timeoutId);
+
     // If mocking is enabled, don't log to the DB, just re-throw.
     if (import.meta.env.MOCK_AI_SERVICE === "true") {
-      throw error;
+      throw mapped;
     }
 
-    const errorCode = error instanceof GenerationError ? error.code : "AI_SERVICE_ERROR";
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    const errorCode = mapped.code;
+    const errorMessage = mapped.message;
 
     await supabase.from("generation_error_logs").insert({
       user_id,
@@ -159,6 +252,8 @@ export async function generateFlashcards({
       source_text_length: source_text.length,
     });
 
-    throw error;
+    throw mapped;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
