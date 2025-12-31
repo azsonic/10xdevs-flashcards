@@ -1,12 +1,15 @@
 # Product Requirements Document (PRD) - 10xdevs-flashcards
 
 ## 1. Product Overview
+
 The 10xdevs-flashcards application is a web-based learning tool designed for "casual learners." It aims to streamline the creation of educational flashcards by leveraging AI. The core feature allows users to paste a block of text and automatically generate flashcard candidates, which they can then review, edit, and save. The application also supports manual flashcard creation and management. Saved flashcards can be studied using an integrated spaced repetition system to enhance learning efficiency. The Minimum Viable Product (MVP) focuses on delivering a seamless AI generation workflow and a simple, effective study experience.
 
 ## 2. User Problem
+
 Many individuals, particularly "casual learners," recognize the effectiveness of flashcards and spaced repetition for learning and memorization. However, the process of manually creating high-quality flashcards is often tedious and time-consuming. This friction discourages potential users from adopting this powerful study method, especially when dealing with large volumes of text or complex subjects. The 10xdevs-flashcards application directly addresses this by automating the most labor-intensive part of the process, making flashcard-based learning more accessible and appealing.
 
 ## 3. Functional Requirements
+
 - FR-01: User Authentication
   - Users must be able to create an account using an email address and a password.
   - Users must be able to log in and log out of their accounts.
@@ -42,7 +45,9 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
   - The system must track the origin of every saved flashcard (AI-generated or manually created).
 
 ## 4. Product Boundaries
+
 ### In Scope for MVP:
+
 - AI-generated flashcards from user-pasted text (up to 5000 characters).
 - Full manual flashcard creation and editing capabilities.
 - Browsing, editing, and deleting saved flashcards.
@@ -52,6 +57,7 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
 - Web-only application.
 
 ### Out of Scope for MVP:
+
 - Developing a custom, advanced spaced-repetition algorithm.
 - Importing content from various file formats (PDF, DOCX, etc.).
 - Sharing flashcard sets or collaborating between users.
@@ -62,6 +68,7 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
 ## 5. User Stories
 
 ### User Account Management
+
 - ID: US-001
 - Title: New User Registration
 - Description: As a new user, I want to create an account using my email and a password so that I can save and manage my flashcards.
@@ -87,6 +94,7 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
   - Then my session is terminated, and I am redirected to the login page.
 
 ### AI Flashcard Generation & Curation
+
 - ID: US-004
 - Title: Generate Flashcards from Text
 - Description: As a user, I want to paste a block of text and have the AI generate flashcard candidates so I can save time on manual creation.
@@ -145,6 +153,7 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
   - And I am redirected to my main flashcard list, where the new cards appear.
 
 ### Manual Flashcard Management
+
 - ID: US-010
 - Title: Manual Flashcard Creation
 - Description: As a user, I want to be able to create a flashcard from scratch to add specific knowledge that wasn't in the source text.
@@ -191,6 +200,7 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
   - And when I confirm the deletion, the flashcard is permanently removed from my list.
 
 ### Studying
+
 - ID: US-015
 - Title: Start a Study Session
 - Description: As a user, I want to start a study session that uses a spaced repetition algorithm to show me cards at the optimal time for learning.
@@ -210,6 +220,7 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
   - And when I select an option, my response is recorded, and the next card is shown.
 
 ### Onboarding
+
 - ID: US-017
 - Title: View Onboarding Empty State
 - Description: As a new user, I want to see a clear starting point so I know how to use the application.
@@ -220,10 +231,10 @@ Many individuals, particularly "casual learners," recognize the effectiveness of
   - And the message includes a clear call to action to paste text and generate my first flashcards.
 
 ## 6. Success Metrics
+
 - SM-01: AI-Generated Flashcard Quality
   - Metric: 75% of AI-generated flashcards are accepted by users.
   - Measurement: This will be measured by analyzing the generation logs. For each generation event, the system will record the number of candidates generated versus the number of candidates accepted by the user (either as-is or after editing). The ratio of accepted_cards / generated_cards will be tracked.
 - SM-02: AI Generation Feature Adoption
   - Metric: Users create 75% of their flashcards using the AI generation feature.
   - Measurement: This will be measured by tracking the origin of each flashcard saved to the database. Each card will have a flag indicating if it originated from the "AI-generated" flow or the "manual creation" flow. We will calculate the ratio of AI-generated_cards / total_cards per user and in aggregate.
-

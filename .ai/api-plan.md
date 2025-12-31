@@ -4,10 +4,10 @@
 
 The API exposes the following main resources, mapped to database entities:
 
-| Resource | Database Table | Description |
-|----------|----------------|-------------|
-| `flashcards` | `flashcards` | Individual flashcard items owned by users |
-| `generations` | `generations` | AI generation event logs and metadata |
+| Resource            | Database Table          | Description                                  |
+| ------------------- | ----------------------- | -------------------------------------------- |
+| `flashcards`        | `flashcards`            | Individual flashcard items owned by users    |
+| `generations`       | `generations`           | AI generation event logs and metadata        |
 | `generation-errors` | `generation_error_logs` | Failed AI generation attempt logs (internal) |
 
 **Note on Authentication**: User authentication is handled by Supabase Auth. The API relies on Supabase's built-in authentication system rather than custom authentication endpoints.
@@ -23,6 +23,7 @@ Retrieve a paginated list of the authenticated user's flashcards with optional s
 **Authentication**: Required
 
 **Query Parameters**:
+
 - `page` (integer, optional, default: 1) - Page number for pagination
 - `limit` (integer, optional, default: 20, max: 100) - Number of items per page
 - `search` (string, optional) - Search query to filter flashcards by front or back content
@@ -30,6 +31,7 @@ Retrieve a paginated list of the authenticated user's flashcards with optional s
 **Request Payload**: None
 
 **Success Response** (200 OK):
+
 ```json
 {
   "data": [
@@ -54,6 +56,7 @@ Retrieve a paginated list of the authenticated user's flashcards with optional s
 ```
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `400 Bad Request`: Invalid query parameters (e.g., page < 1, limit > 100)
 
@@ -66,11 +69,13 @@ Retrieve a single flashcard by ID.
 **Authentication**: Required
 
 **Path Parameters**:
+
 - `id` (integer, required) - Flashcard ID
 
 **Request Payload**: None
 
 **Success Response** (200 OK):
+
 ```json
 {
   "data": {
@@ -87,6 +92,7 @@ Retrieve a single flashcard by ID.
 ```
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `404 Not Found`: Flashcard with specified ID does not exist or does not belong to user
 - `400 Bad Request`: Invalid ID format
@@ -100,6 +106,7 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 **Authentication**: Required
 
 **Request Payload**:
+
 ```json
 {
   "generation_id": 45,
@@ -119,6 +126,7 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 ```
 
 **Validation Rules**:
+
 - `generation_id` (integer, optional) - Required only when `source` is 'ai-full' or 'ai-edited'. Must reference a valid generation owned by the user.
 - `flashcards` (array, required, min: 1, max: 50) - Array of flashcard objects
 - Each flashcard must have:
@@ -128,7 +136,8 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 
 **Use Cases**:
 
-*Manual Single Card*:
+_Manual Single Card_:
+
 ```json
 {
   "flashcards": [
@@ -141,7 +150,8 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 }
 ```
 
-*Manual Multiple Cards*:
+_Manual Multiple Cards_:
+
 ```json
 {
   "flashcards": [
@@ -159,7 +169,8 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 }
 ```
 
-*AI-Generated Cards (after review)*:
+_AI-Generated Cards (after review)_:
+
 ```json
 {
   "generation_id": 45,
@@ -180,7 +191,8 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 
 **Success Response** (201 Created):
 
-*Single Card*:
+_Single Card_:
+
 ```json
 {
   "data": {
@@ -201,7 +213,8 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 }
 ```
 
-*Multiple Cards*:
+_Multiple Cards_:
+
 ```json
 {
   "data": {
@@ -233,6 +246,7 @@ Create one or more flashcards manually or from AI generation. This unified endpo
 ```
 
 **Business Logic**:
+
 - All flashcards are created in a single database transaction
 - If any flashcard fails validation, the entire operation is rolled back
 - When `generation_id` is provided (AI-generated cards):
@@ -243,6 +257,7 @@ Create one or more flashcards manually or from AI generation. This unified endpo
   - `generation_id` is set to NULL in the database
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `400 Bad Request`: Validation errors
   ```json
@@ -282,9 +297,11 @@ Update an existing flashcard.
 **Authentication**: Required
 
 **Path Parameters**:
+
 - `id` (integer, required) - Flashcard ID
 
 **Request Payload** (all fields optional):
+
 ```json
 {
   "front": "Updated front content",
@@ -293,6 +310,7 @@ Update an existing flashcard.
 ```
 
 **Success Response** (200 OK):
+
 ```json
 {
   "data": {
@@ -309,14 +327,16 @@ Update an existing flashcard.
 ```
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `404 Not Found`: Flashcard does not exist or does not belong to user
 - `400 Bad Request`: Validation errors (e.g., exceeding character limits)
 
 **Validation Rules**:
-  - `front` (string, required, max 200 chars)
-  - `back` (string, required, max 500 chars)
-  - `source` (enum, required) - One of: 'manual', 'ai-edited'
+
+- `front` (string, required, max 200 chars)
+- `back` (string, required, max 500 chars)
+- `source` (enum, required) - One of: 'manual', 'ai-edited'
 
 ---
 
@@ -327,6 +347,7 @@ Delete a flashcard permanently.
 **Authentication**: Required
 
 **Path Parameters**:
+
 - `id` (integer, required) - Flashcard ID
 
 **Request Payload**: None
@@ -334,6 +355,7 @@ Delete a flashcard permanently.
 **Success Response** (204 No Content): Empty response body
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `404 Not Found`: Flashcard does not exist or does not belong to user
 - `400 Bad Request`: Invalid ID format
@@ -349,17 +371,20 @@ Generate flashcard candidates from source text using AI. This endpoint calls the
 **Authentication**: Required
 
 **Request Payload**:
+
 ```json
 {
-  "source_text": "The text to generate flashcards from (1000-5000 characters)",
+  "source_text": "The text to generate flashcards from (1000-5000 characters)"
 }
 ```
 
 **Validation Rules**:
+
 - `source_text` (string, required, min: 1000 chars, max: 5000 chars)
 <!-- - `model` (string, optional, default: "gpt-4o-mini") - AI model identifier -->
 
 **Success Response** (200 OK):
+
 ```json
 {
   "data": {
@@ -383,6 +408,7 @@ Generate flashcard candidates from source text using AI. This endpoint calls the
 ```
 
 **Business Logic**:
+
 - Creates a SHA-256 hash of `source_text` for logging
 - Records `source_text_length`, `model`, `generated_count`, and `generation_duration` in the `generations` table
 - Returns candidates without saving them as flashcards
@@ -390,6 +416,7 @@ Generate flashcard candidates from source text using AI. This endpoint calls the
 - Request timeout: 30 seconds
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `400 Bad Request`: Validation errors
   ```json
@@ -439,12 +466,14 @@ Retrieve a paginated list of the authenticated user's generation history.
 **Authentication**: Required
 
 **Query Parameters**:
+
 - `page` (integer, optional, default: 1) - Page number
 - `limit` (integer, optional, default: 20, max: 100) - Items per page
 
 **Request Payload**: None
 
 **Success Response** (200 OK):
+
 ```json
 {
   "data": [
@@ -472,6 +501,7 @@ Retrieve a paginated list of the authenticated user's generation history.
 ```
 
 **Error Responses**:
+
 - `401 Unauthorized`: Missing or invalid authentication
 - `400 Bad Request`: Invalid query parameters
 
@@ -493,16 +523,19 @@ The API uses **Supabase Authentication**, which provides:
 ### 3.2 Implementation Details
 
 **Client-Side Authentication Flow**:
+
 1. User signs up or logs in using Supabase Auth SDK
 2. Supabase returns an access token (JWT)
 3. Client includes token in `Authorization` header for all API requests: `Authorization: Bearer <access_token>`
 
 **Server-Side Authentication**:
+
 - API endpoints use Supabase middleware to verify JWT tokens
 - Middleware extracts `user_id` from the token and attaches it to the request context
 - Invalid or missing tokens result in `401 Unauthorized` responses
 
 **Authorization via Row-Level Security (RLS)**:
+
 - Supabase RLS policies automatically enforce data isolation
 - All queries filter by `user_id = auth.uid()`
 - Users can only access their own flashcards, generations, and error logs
@@ -527,27 +560,27 @@ The API uses **Supabase Authentication**, which provides:
 
 #### Flashcards
 
-| Field | Validation Rule | Error Message |
-|-------|----------------|---------------|
-| `front` | Required, string, max 200 characters | "Front content is required and must not exceed 200 characters" |
-| `back` | Required, string, max 500 characters | "Back content is required and must not exceed 500 characters" |
-| `source` | Required, enum: 'ai-full', 'ai-edited', 'manual' | "Source must be one of: ai-full, ai-edited, manual" |
-| `generation_id` | Optional, must be a valid generation owned by user | "Invalid generation ID" |
+| Field           | Validation Rule                                    | Error Message                                                  |
+| --------------- | -------------------------------------------------- | -------------------------------------------------------------- |
+| `front`         | Required, string, max 200 characters               | "Front content is required and must not exceed 200 characters" |
+| `back`          | Required, string, max 500 characters               | "Back content is required and must not exceed 500 characters"  |
+| `source`        | Required, enum: 'ai-full', 'ai-edited', 'manual'   | "Source must be one of: ai-full, ai-edited, manual"            |
+| `generation_id` | Optional, must be a valid generation owned by user | "Invalid generation ID"                                        |
 
 #### Generations
 
-| Field | Validation Rule | Error Message |
-|-------|----------------|---------------|
+| Field         | Validation Rule                                  | Error Message                                          |
+| ------------- | ------------------------------------------------ | ------------------------------------------------------ |
 | `source_text` | Required, string, min 1000 chars, max 5000 chars | "Source text must be between 1000 and 5000 characters" |
-| `model` | Optional, string | "Invalid model identifier" |
+| `model`       | Optional, string                                 | "Invalid model identifier"                             |
 
 #### Flashcard Creation Array (POST /api/flashcards)
 
-| Field | Validation Rule | Error Message |
-|-------|----------------|---------------|
-| `generation_id` | Optional, required when source is 'ai-full' or 'ai-edited', must reference valid generation | "generation_id is required when source is 'ai-full' or 'ai-edited'" |
-| `flashcards` | Required, array, min 1 item, max 50 items | "Must provide between 1 and 50 flashcards" |
-| `flashcards[].source` | Required, enum: 'manual', 'ai-full', 'ai-edited' | "Source must be one of: manual, ai-full, ai-edited" |
+| Field                 | Validation Rule                                                                             | Error Message                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `generation_id`       | Optional, required when source is 'ai-full' or 'ai-edited', must reference valid generation | "generation_id is required when source is 'ai-full' or 'ai-edited'" |
+| `flashcards`          | Required, array, min 1 item, max 50 items                                                   | "Must provide between 1 and 50 flashcards"                          |
+| `flashcards[].source` | Required, enum: 'manual', 'ai-full', 'ai-edited'                                            | "Source must be one of: manual, ai-full, ai-edited"                 |
 
 ### 4.2 Business Logic Implementation
 
@@ -556,6 +589,7 @@ The API uses **Supabase Authentication**, which provides:
 **Endpoint**: `POST /api/generations`
 
 **Logic**:
+
 1. Validate `source_text` length (1000-5000 characters)
 2. Generate SHA-256 hash of source text
 3. Call AI service (OpenRouter) with 30-second timeout
@@ -571,6 +605,7 @@ The API uses **Supabase Authentication**, which provides:
 7. If AI service fails, create `generation_error_logs` entry and return error
 
 **Error Handling**:
+
 - Timeout: Return `408 Request Timeout`
 - AI Service Error: Log to `generation_error_logs`, return `500 Internal Server Error`
 - Validation Error: Return `400 Bad Request`
@@ -596,9 +631,9 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
    - Begin database transaction:
      a. Insert all flashcards with correct `user_id`, `generation_id`, and `source`
      b. Update `generations` record:
-        - Set `accepted_unedited_count` = count of 'ai-full'
-        - Set `accepted_edited_count` = count of 'ai-edited'
-        - Update `updated_at` timestamp
+     - Set `accepted_unedited_count` = count of 'ai-full'
+     - Set `accepted_edited_count` = count of 'ai-edited'
+     - Update `updated_at` timestamp
    - Commit transaction
    - Return created flashcards with IDs
 
@@ -610,6 +645,7 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
    - Return created flashcards with IDs
 
 **Transaction Handling**:
+
 - All operations in a single transaction
 - If any step fails, rollback entire operation
 - Ensures data consistency between `flashcards` and `generations` tables
@@ -623,6 +659,7 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
 **Endpoint**: `GET /api/flashcards`
 
 **Logic**:
+
 1. Build base query filtering by `user_id`
 2. If `search` query param provided:
    - Use Supabase full-text search on GIN index
@@ -633,6 +670,7 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
 6. Return flashcards and pagination info
 
 **Performance**:
+
 - Uses `flashcards_full_text_idx` GIN index for efficient searching
 - Limits max page size to 100 items
 - Default page size: 20 items
@@ -644,6 +682,7 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
 **Endpoint**: `PATCH /api/flashcards/:id`
 
 **Logic**:
+
 1. Verify flashcard exists and belongs to user (via RLS)
 2. Validate updated fields if provided
 3. Update only the provided fields
@@ -659,6 +698,7 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
 **Endpoint**: `DELETE /api/flashcards/:id`
 
 **Logic**:
+
 1. Verify flashcard exists and belongs to user (via RLS)
 2. Delete flashcard permanently
 3. Return `204 No Content`
@@ -670,17 +710,20 @@ This unified endpoint handles both manual and AI-generated flashcard creation, s
 ### 4.3 Additional Business Rules
 
 #### Character Counters (FR-04)
+
 - Character validation enforced at API level
 - UI displays real-time counters but API provides final validation
 - Exceeding limits returns `400 Bad Request` with specific error messages
 
 #### Empty State Handling (FR-07)
+
 - No special API logic required
 - UI detects zero flashcards and displays onboarding call-to-action
 
 #### Analytics Tracking (FR-08, SM-01, SM-02)
 
 **Metrics Calculation**:
+
 - **SM-01 (75% acceptance rate)**: Calculate from `generations` table
   - Formula: `(accepted_unedited_count + accepted_edited_count) / generated_count`
 - **SM-02 (75% AI-generated)**: Calculate from `flashcards` table
@@ -697,10 +740,12 @@ These analytics can be exposed via future `GET /api/analytics` endpoints.
 The current database schema does not include SRS-related fields. When implementing study mode, the following will be needed:
 
 **Additional Database Tables**:
+
 - `study_sessions` - Track study sessions
 - `card_reviews` - Track individual card reviews with performance data
 
 **Additional Endpoints**:
+
 - `POST /api/study-sessions` - Start a new study session
 - `GET /api/study-sessions/current` - Get current active session
 - `GET /api/flashcards/due` - Get flashcards due for review
@@ -709,12 +754,14 @@ The current database schema does not include SRS-related fields. When implementi
 ### 5.2 Rate Limiting
 
 Consider implementing rate limiting to prevent abuse:
+
 - AI generation: 10 requests per minute per user
 - Other endpoints: 100 requests per minute per user
 
 ### 5.3 Error Monitoring
 
 Log all API errors to a monitoring service for operational visibility into:
+
 - AI generation failure rates
 - Timeout frequency
 - Validation error patterns
@@ -729,8 +776,12 @@ All successful responses follow this structure:
 
 ```json
 {
-  "data": { /* single object or array */ },
-  "pagination": { /* optional, for list endpoints */ }
+  "data": {
+    /* single object or array */
+  },
+  "pagination": {
+    /* optional, for list endpoints */
+  }
 }
 ```
 
@@ -743,23 +794,25 @@ All error responses follow this structure:
   "error": {
     "code": "ERROR_CODE",
     "message": "Human-readable error message",
-    "details": { /* optional, additional context */ }
+    "details": {
+      /* optional, additional context */
+    }
   }
 }
 ```
 
 ### 6.3 HTTP Status Codes
 
-| Status Code | Usage |
-|-------------|-------|
-| 200 OK | Successful GET, PATCH requests |
-| 201 Created | Successful POST requests creating resources |
-| 204 No Content | Successful DELETE requests |
-| 400 Bad Request | Validation errors, invalid request format |
-| 401 Unauthorized | Missing or invalid authentication |
-| 404 Not Found | Resource does not exist |
-| 408 Request Timeout | Generation timeout (30 seconds) |
-| 429 Too Many Requests | Rate limit exceeded (future) |
+| Status Code               | Usage                                         |
+| ------------------------- | --------------------------------------------- |
+| 200 OK                    | Successful GET, PATCH requests                |
+| 201 Created               | Successful POST requests creating resources   |
+| 204 No Content            | Successful DELETE requests                    |
+| 400 Bad Request           | Validation errors, invalid request format     |
+| 401 Unauthorized          | Missing or invalid authentication             |
+| 404 Not Found             | Resource does not exist                       |
+| 408 Request Timeout       | Generation timeout (30 seconds)               |
+| 429 Too Many Requests     | Rate limit exceeded (future)                  |
 | 500 Internal Server Error | Unexpected server errors, AI service failures |
 
 ---
@@ -769,16 +822,19 @@ All error responses follow this structure:
 ### 7.1 Technology Alignment
 
 **Astro 5 + Supabase**:
+
 - API routes defined in `src/pages/api/` directory
 - Each endpoint is a separate file (e.g., `src/pages/api/flashcards.ts`)
 - Supabase client initialized in middleware and available on `Astro.locals.supabase`
 
 **Type Safety**:
+
 - All request/response types defined in `src/types.ts`
 - Database types auto-generated in `src/db/database.types.ts`
 - Use TypeScript interfaces for validation
 
 **Error Handling Pattern**:
+
 - Use try-catch blocks in all API routes
 - Return consistent error format
 - Log unexpected errors for monitoring
@@ -808,4 +864,3 @@ All error responses follow this structure:
 6. **Authentication Only**: The API does not implement custom authorization beyond Supabase RLS. All users have the same capabilities (no admin vs. regular user distinction).
 
 7. **Soft Delete**: Flashcard deletion is permanent (hard delete). No soft delete or archive functionality in MVP.
-
