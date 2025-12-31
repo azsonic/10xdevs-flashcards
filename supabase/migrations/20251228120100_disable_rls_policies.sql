@@ -41,7 +41,7 @@ drop policy if exists "generation_error_logs_delete_policy_authenticated" on pub
 
 -- Optional: Disable RLS entirely on these tables
 -- Uncomment the following lines if you want to disable RLS completely:
--- alter table public.flashcards disable row level security;
--- alter table public.generations disable row level security;
--- alter table public.generation_error_logs disable row level security;
+alter table public.flashcards disable row level security;
+alter table public.generations disable row level security;
+alter table public.generation_error_logs disable row level security;
 
