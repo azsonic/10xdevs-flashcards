@@ -33,6 +33,10 @@ The project is built with the following technologies:
   - [Supabase](https://supabase.io/)
 - **AI Integration:**
   - [Openrouter.ai](https://openrouter.ai/)
+- **Testing:**
+  - [Vitest](https://vitest.dev/) - Unit testing framework
+  - [React Testing Library](https://testing-library.com/react) - React component testing
+  - [Playwright](https://playwright.dev/) - End-to-end testing
 - **CI/CD and Hosting:**
   - [GitHub Actions](https://github.com/features/actions)
   - [DigitalOcean](https://www.digitalocean.com/)
