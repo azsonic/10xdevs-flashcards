@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import { createFlashcards, FlashcardCreationError } from "../../../lib/flashcard.service";
 import type { CreateFlashcardsCommand } from "../../../types";
 
@@ -29,7 +28,19 @@ const CreateFlashcardsSchema = z
   });
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  const { supabase } = locals;
+  const { supabase, user } = locals;
+
+  if (!user) {
+    return new Response(
+      JSON.stringify({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "You must be logged in to save flashcards.",
+        },
+      }),
+      { status: 401, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   let command: CreateFlashcardsCommand;
   try {
@@ -64,7 +75,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const result = await createFlashcards({
       generation_id: validation.data.generation_id,
       flashcards: validation.data.flashcards,
-      user_id: DEFAULT_USER_ID,
+      user_id: user.id,
       supabase,
     });
 

@@ -1,0 +1,49 @@
+---
+import { Button } from "@/components/ui/button";
+
+const { user } = Astro.locals;
+---
+
+<header
+  class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+>
+  <div class="container flex h-14 items-center px-4 md:px-8 mx-auto">
+    <div class="mr-4 hidden md:flex">
+      <a class="mr-6 flex items-center space-x-2" href="/">
+        <span class="hidden font-bold sm:inline-block">10xDevs Flashcards</span>
+      </a>
+      <nav class="flex items-center space-x-6 text-sm font-medium">
+        <a class="transition-colors hover:text-foreground/80 text-foreground/60" href="/study">Study</a>
+        <a class="transition-colors hover:text-foreground/80 text-foreground/60" href="/generate">Generate</a>
+      </nav>
+    </div>
+    <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+      <div class="w-full flex-1 md:w-auto md:flex-none"></div>
+      <nav class="flex items-center space-x-2">
+        {
+          user ? (
+            <>
+              <span class="text-sm text-muted-foreground mr-2">{user.email}</span>
+              <form action="/api/auth/signout" method="post">
+                <Button variant="ghost" size="sm" type="submit">
+                  Logout
+                </Button>
+              </form>
+            </>
+          ) : (
+            <>
+              <a href="/login">
+                <Button variant="ghost" size="sm">
+                  Login
+                </Button>
+              </a>
+              <a href="/register">
+                <Button size="sm">Register</Button>
+              </a>
+            </>
+          )
+        }
+      </nav>
+    </div>
+  </div>
+</header>
