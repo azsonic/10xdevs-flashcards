@@ -18,6 +18,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
+    mode: "onBlur",
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -50,6 +51,7 @@ export function LoginForm() {
 
       // Success - redirect to dashboard
       // Use window.location to ensure fresh server state with cookies
+      // eslint-disable-next-line react-compiler/react-compiler
       window.location.href = "/";
     } catch {
       setError("An unexpected error occurred");
@@ -58,43 +60,66 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm mx-auto">
+    <Card className="w-full max-w-sm mx-auto" data-test-id="login-card">
       <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>Enter your email below to login to your account.</CardDescription>
+        <CardTitle className="text-2xl" data-test-id="login-title">
+          Login
+        </CardTitle>
+        <CardDescription data-test-id="login-description">
+          Enter your email below to login to your account.
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="grid gap-4" data-test-id="login-form">
           {error && (
-            <div className="text-sm text-destructive font-medium p-3 rounded-md bg-destructive/15">{error}</div>
+            <div
+              className="text-sm text-destructive font-medium p-3 rounded-md bg-destructive/15"
+              data-test-id="login-error"
+            >
+              {error}
+            </div>
           )}
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" {...form.register("email")} />
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              {...form.register("email")}
+              data-test-id="login-email-input"
+            />
             {form.formState.errors.email && (
-              <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
+              <p className="text-sm text-destructive" data-test-id="login-email-error">
+                {form.formState.errors.email.message}
+              </p>
             )}
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <a href="/forgot-password" className="ml-auto inline-block text-sm underline">
+              <a
+                href="/forgot-password"
+                className="ml-auto inline-block text-sm underline"
+                data-test-id="login-forgot-password-link"
+              >
                 Forgot your password?
               </a>
             </div>
-            <Input id="password" type="password" {...form.register("password")} />
+            <Input id="password" type="password" {...form.register("password")} data-test-id="login-password-input" />
             {form.formState.errors.password && (
-              <p className="text-sm text-destructive">{form.formState.errors.password.message}</p>
+              <p className="text-sm text-destructive" data-test-id="login-password-error">
+                {form.formState.errors.password.message}
+              </p>
             )}
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full" disabled={isLoading} data-test-id="login-submit-button">
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" data-test-id="login-loading-spinner" />}
             Login
           </Button>
         </form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <a href="/register" className="underline">
+          <a href="/register" className="underline" data-test-id="login-register-link">
             Sign up
           </a>
         </div>
