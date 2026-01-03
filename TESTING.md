@@ -5,6 +5,7 @@ This document provides comprehensive information about the testing setup and gui
 ## Overview
 
 The project uses two testing frameworks:
+
 - **Vitest** - For unit and integration tests
 - **Playwright** - For end-to-end (E2E) tests
 
@@ -61,10 +62,10 @@ npm run test:coverage
 Create test files with `.test.ts` or `.spec.ts` extension:
 
 ```typescript
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi } from "vitest";
 
-describe('Component or Function', () => {
-  it('should do something', () => {
+describe("Component or Function", () => {
+  it("should do something", () => {
     expect(true).toBe(true);
   });
 });
@@ -83,22 +84,22 @@ describe('Component or Function', () => {
 ### Example Unit Test
 
 ```typescript
-import { describe, it, expect, vi } from 'vitest';
-import { createMockSupabaseClient } from '@/test/mocks/factories';
+import { describe, it, expect, vi } from "vitest";
+import { createMockSupabaseClient } from "@/test/mocks/factories";
 
-describe('Authentication Service', () => {
-  it('should sign in user successfully', async () => {
+describe("Authentication Service", () => {
+  it("should sign in user successfully", async () => {
     // Arrange
     const mockClient = createMockSupabaseClient();
     mockClient.auth.signInWithPassword.mockResolvedValue({
-      data: { user: { id: '123' } },
+      data: { user: { id: "123" } },
       error: null,
     });
 
     // Act
     const result = await mockClient.auth.signInWithPassword({
-      email: 'test@example.com',
-      password: 'password',
+      email: "test@example.com",
+      password: "password",
     });
 
     // Assert
@@ -131,12 +132,12 @@ npm run test:e2e:codegen
 Create test files with `.spec.ts` extension in the `e2e/` directory:
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Feature Name', () => {
-  test('should perform action', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('body')).toBeVisible();
+test.describe("Feature Name", () => {
+  test("should perform action", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("body")).toBeVisible();
   });
 });
 ```
@@ -157,16 +158,16 @@ test.describe('Feature Name', () => {
 ### Example E2E Test with Page Object Model
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { HomePage } from './page-objects/BasePage';
+import { test, expect } from "@playwright/test";
+import { HomePage } from "./page-objects/BasePage";
 
-test.describe('Homepage Tests', () => {
-  test('should load homepage successfully', async ({ page }) => {
+test.describe("Homepage Tests", () => {
+  test("should load homepage successfully", async ({ page }) => {
     const homePage = new HomePage(page);
-    
+
     await homePage.navigate();
     await homePage.waitForPageLoad();
-    
+
     expect(await homePage.isLoaded()).toBe(true);
   });
 });
@@ -270,6 +271,7 @@ npm run test:coverage
 ```
 
 Coverage reports are generated in:
+
 - **Terminal**: Summary view
 - **HTML**: `coverage/index.html`
 - **JSON**: `coverage/coverage-final.json`
@@ -279,6 +281,7 @@ Coverage thresholds and configuration can be adjusted in `vitest.config.ts`.
 ## CI/CD Integration
 
 The test setup is configured for CI environments:
+
 - Playwright retries tests 2 times in CI
 - Uses single worker in CI for stability
 - Generates HTML reports for test results
@@ -293,8 +296,8 @@ The test setup is configured for CI environments:
 ## Getting Help
 
 For questions or issues with testing:
+
 1. Check the documentation above
 2. Review existing test examples
 3. Check the configuration files
 4. Consult the official documentation for the testing frameworks
-

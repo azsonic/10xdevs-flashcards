@@ -7,9 +7,11 @@ This document summarizes the unit tests created for the `CandidateCard` componen
 ## Files Created
 
 ### 1. `src/lib/validation.ts`
+
 **Purpose:** Extract business logic from the component into testable pure functions
 
 **Exports:**
+
 - `FRONT_MAX_LENGTH` (200) - Maximum characters for flashcard front
 - `BACK_MAX_LENGTH` (500) - Maximum characters for flashcard back
 - `validateFlashcardContent()` - Validates front and back content with detailed error messages
@@ -17,15 +19,18 @@ This document summarizes the unit tests created for the `CandidateCard` componen
 - `trimFlashcardContent()` - Trims whitespace from flashcard content
 
 **Benefits:**
+
 - Pure functions that are easy to test
 - Reusable validation logic
 - Centralized business rules
 - Better error messages for users
 
 ### 2. `src/test/validation.test.ts`
+
 **Purpose:** Comprehensive unit tests for validation utilities
 
 **Test Coverage:** 41 tests covering:
+
 - ✅ Valid cases (6 tests)
   - Correct content validation
   - Content at maximum length boundaries
@@ -51,15 +56,18 @@ This document summarizes the unit tests created for the `CandidateCard` componen
   - Constants validation
 
 **Key Testing Principles Applied:**
+
 - Boundary value testing (200/201, 500/501 chars)
 - Edge case coverage (emojis, unicode, special chars)
 - Error accumulation testing
 - Pure function testing (no side effects)
 
 ### 3. `src/test/CandidateCard.test.tsx`
+
 **Purpose:** Component behavior and integration tests
 
 **Test Coverage:** 33 tests covering:
+
 - ✅ Rendering (5 tests)
   - Display of content
   - Button visibility
@@ -97,6 +105,7 @@ This document summarizes the unit tests created for the `CandidateCard` componen
   - Rapid state changes
 
 **Testing Techniques Used:**
+
 - React Testing Library for user-centric testing
 - userEvent for realistic user interactions
 - fireEvent for performance-critical operations (long strings)
@@ -114,6 +123,7 @@ Duration   ~10-12 seconds
 ```
 
 **Breakdown:**
+
 - `src/test/example.test.ts`: 2 tests ✅
 - `src/test/validation.test.ts`: 41 tests ✅
 - `src/test/CandidateCard.test.tsx`: 33 tests ✅
@@ -121,6 +131,7 @@ Duration   ~10-12 seconds
 ## Key Business Rules Tested
 
 ### 1. Validation Rules
+
 - ✅ Front text: 1-200 characters (after trim)
 - ✅ Back text: 1-500 characters (after trim)
 - ✅ Empty strings not allowed
@@ -128,6 +139,7 @@ Duration   ~10-12 seconds
 - ✅ Trimming applied before saving
 
 ### 2. User Interface Behavior
+
 - ✅ Edit mode toggle
 - ✅ Character counters update in real-time
 - ✅ Save button disabled when invalid
@@ -135,6 +147,7 @@ Duration   ~10-12 seconds
 - ✅ Edited badge shows for modified cards
 
 ### 3. Edge Cases Covered
+
 - ✅ Boundary values (exactly at limits)
 - ✅ Unicode and emoji handling
 - ✅ Multiline content preservation
@@ -146,8 +159,9 @@ Duration   ~10-12 seconds
 ### Refactoring Benefits
 
 **Before:** Validation logic embedded in component
+
 ```tsx
-const isSaveValid = 
+const isSaveValid =
   editFront.trim().length > 0 &&
   editFront.trim().length <= FRONT_MAX_LENGTH &&
   editBack.trim().length > 0 &&
@@ -155,11 +169,13 @@ const isSaveValid =
 ```
 
 **After:** Extracted to pure function
+
 ```typescript
 const { isValid, errors } = validateFlashcardContent(editFront, editBack);
 ```
 
 ### Benefits of Extraction:
+
 1. **Testability** - Pure functions easy to unit test
 2. **Reusability** - Can be used in other components
 3. **Maintainability** - Single source of truth for validation
@@ -169,26 +185,29 @@ const { isValid, errors } = validateFlashcardContent(editFront, editBack);
 ## Testing Best Practices Demonstrated
 
 ### 1. AAA Pattern (Arrange-Act-Assert)
+
 ```typescript
 it("should validate correct content", () => {
   // Arrange
   const front = "Question";
   const back = "Answer";
-  
+
   // Act
   const result = validateFlashcardContent(front, back);
-  
+
   // Assert
   expect(result.isValid).toBe(true);
 });
 ```
 
 ### 2. Descriptive Test Names
+
 - ✅ `should validate content with whitespace that trims to valid length`
 - ✅ `should disable save button when front exceeds max length`
 - ✅ `should call onUpdate with trimmed values when save is clicked`
 
 ### 3. Boundary Testing
+
 ```typescript
 it("should validate front at exactly max length (200 chars)", () => {
   const front = "a".repeat(200);
@@ -202,6 +221,7 @@ it("should reject front at exactly 201 characters (boundary)", () => {
 ```
 
 ### 4. User-Centric Component Testing
+
 ```typescript
 // Test from user's perspective
 await user.click(screen.getByLabelText("Edit flashcard"));
@@ -211,6 +231,7 @@ expect(mockOnUpdate).toHaveBeenCalledWith(id, { front: "New text", ... });
 ```
 
 ### 5. Performance Optimization
+
 ```typescript
 // Use fireEvent for long strings (faster than userEvent)
 fireEvent.change(textarea, { target: { value: "a".repeat(501) } });
@@ -219,6 +240,7 @@ fireEvent.change(textarea, { target: { value: "a".repeat(501) } });
 ## Coverage Areas
 
 ### Well Covered ✅
+
 - Validation logic (100%)
 - Component state management
 - User interactions
@@ -226,6 +248,7 @@ fireEvent.change(textarea, { target: { value: "a".repeat(501) } });
 - Edge cases
 
 ### Not Covered (By Design) ⚠️
+
 - UI component rendering (Shadcn components)
 - Visual appearance (better for E2E tests)
 - Animation/transitions
@@ -234,6 +257,7 @@ fireEvent.change(textarea, { target: { value: "a".repeat(501) } });
 ## Running the Tests
 
 ### Commands
+
 ```bash
 # Run all tests
 npm test
@@ -252,6 +276,7 @@ npm test -- src/test/validation.test.ts
 ```
 
 ### Expected Output
+
 - ✅ All 76 tests passing
 - ⏱️ Duration: ~10-12 seconds
 - 📊 No errors or warnings
@@ -259,6 +284,7 @@ npm test -- src/test/validation.test.ts
 ## Integration with CI/CD
 
 These tests are ready for CI/CD integration:
+
 - ✅ Fast execution (< 15 seconds)
 - ✅ No external dependencies
 - ✅ Deterministic results
@@ -268,6 +294,7 @@ These tests are ready for CI/CD integration:
 ## Future Enhancements
 
 ### Potential Additions:
+
 1. **Snapshot Testing** - For component structure
 2. **Coverage Thresholds** - Enforce minimum coverage
 3. **Performance Tests** - Measure render time
@@ -275,6 +302,7 @@ These tests are ready for CI/CD integration:
 5. **Visual Regression** - Screenshot comparisons
 
 ### Components to Test Next:
+
 1. `GenerationInput.tsx` - Validation logic similar to CandidateCard
 2. `SourceTextDisplay.tsx` - Truncation logic
 3. `GenerationLoader.tsx` - Time-based logic
@@ -283,6 +311,7 @@ These tests are ready for CI/CD integration:
 ## Conclusion
 
 This test suite provides:
+
 - ✅ **76 comprehensive tests** covering business logic and user interactions
 - ✅ **High confidence** in component behavior and validation rules
 - ✅ **Regression protection** against future changes
@@ -290,4 +319,3 @@ This test suite provides:
 - ✅ **Foundation** for testing other components
 
 The tests follow industry best practices and are maintainable, fast, and reliable.
-

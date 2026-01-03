@@ -82,24 +82,24 @@ flowchart TD
     PageLogin --- CompLoginForm
     PageRegister --- CompRegisterForm
     PageHome -.-> Layout
-    
+
     %% Relacje - Layout Dynamiczny
     Layout -->|Sprawdza Stan| Locals
     Locals -->|Zalogowany| CompUserMenu
     Locals -->|Gość| CompGuestMenu
-    
+
     %% Relacje - Akcje Formularzy
     CompLoginForm -->|SignIn| SupabaseClient
     CompRegisterForm -->|SignUp| SupabaseClient
     CompUserMenu -->|SignOut| ApiSignOut
-    
+
     %% Relacje - Middleware i Ochrona
     User -.->|Żądanie HTTP| Middleware
     Middleware -->|Weryfikacja Tokena| SupabaseClient
     Middleware -->|Popuje| Locals
     Middleware -->|Przekierowanie| PageLogin
     Middleware -->|Przekierowanie| PageHome
-    
+
     %% Relacje - API
     ApiSignOut -->|Czyści Cookies| SupabaseClient
     ApiCallback -->|Wymiana Kodu| SupabaseClient

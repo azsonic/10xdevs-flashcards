@@ -1,6 +1,7 @@
 # Diagram Journey - Podróż Użytkownika
 
 <user_journey_analysis>
+
 1. **Ścieżki użytkownika (z PRD i Auth Spec)**:
    - **Nowy Użytkownik**: Wejście na stronę -> Rejestracja -> Auto-login -> Dashboard (Onboarding).
    - **Powracający Użytkownik (Niezalogowany)**: Wejście na stronę -> Przekierowanie na Login -> Logowanie -> Dashboard.
