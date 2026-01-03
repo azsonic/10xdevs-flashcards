@@ -23,22 +23,24 @@ const { user } = Astro.locals;
         {
           user ? (
             <>
-              <span class="text-sm text-muted-foreground mr-2">{user.email}</span>
-              <form action="/api/auth/signout" method="post">
-                <Button variant="ghost" size="sm" type="submit">
+              <span class="text-sm text-muted-foreground mr-2" data-test-id="nav-user-email">{user.email}</span>
+              <form action="/api/auth/signout" method="post" data-test-id="nav-logout-form">
+                <Button variant="ghost" size="sm" type="submit" data-test-id="nav-logout-button">
                   Logout
                 </Button>
               </form>
             </>
           ) : (
             <>
-              <a href="/login">
-                <Button variant="ghost" size="sm">
+              <a href="/login" data-test-id="nav-login-link">
+                <Button variant="ghost" size="sm" data-test-id="nav-login-button">
                   Login
                 </Button>
               </a>
-              <a href="/register">
-                <Button size="sm">Register</Button>
+              <a href="/register" data-test-id="nav-register-link">
+                <Button size="sm" data-test-id="nav-register-button">
+                  Register
+                </Button>
               </a>
             </>
           )
