@@ -209,7 +209,7 @@ describe("CandidateCard Component", () => {
       await user.click(screen.getByLabelText("Edit flashcard"));
 
       const backTextarea = screen.getByPlaceholderText("Enter back side text...");
-      
+
       // Use fireEvent for performance when typing long strings
       fireEvent.change(backTextarea, { target: { value: "a".repeat(501) } });
 
@@ -244,10 +244,10 @@ describe("CandidateCard Component", () => {
       await user.clear(frontTextarea);
 
       const saveButton = screen.getByLabelText("Save changes");
-      
+
       // Button should be disabled when front is empty
       expect(saveButton).toBeDisabled();
-      
+
       // Verify onUpdate was not called
       expect(mockOnUpdate).not.toHaveBeenCalled();
     });
@@ -260,7 +260,7 @@ describe("CandidateCard Component", () => {
 
       const frontTextarea = screen.getByPlaceholderText("Enter front side text...");
       await user.clear(frontTextarea);
-      
+
       // Type spaces
       fireEvent.change(frontTextarea, { target: { value: "   " } });
 
@@ -440,9 +440,11 @@ describe("CandidateCard Component", () => {
       render(<CandidateCard candidate={multilineCandidate} onUpdate={mockOnUpdate} onRemove={mockOnRemove} />);
 
       // Use a function matcher for multiline text
-      expect(screen.getByText((content, element) => {
-        return element?.textContent === "Line 1\nLine 2\nLine 3";
-      })).toBeInTheDocument();
+      expect(
+        screen.getByText((content, element) => {
+          return element?.textContent === "Line 1\nLine 2\nLine 3";
+        })
+      ).toBeInTheDocument();
     });
 
     it("should handle candidate with special characters", () => {
@@ -473,4 +475,3 @@ describe("CandidateCard Component", () => {
     });
   });
 });
-
