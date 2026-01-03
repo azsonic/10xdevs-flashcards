@@ -1,5 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
+
 /**
  * Playwright configuration for E2E testing
  * Following guidelines: Initialize with Chromium/Desktop Chrome only
@@ -12,9 +17,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:4321",
+    baseURL: process.env.BASE_URL || "http://localhost:3001",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    testIdAttribute: "data-test-id", // Use data-test-id instead of default data-testid
   },
 
   projects: [
@@ -24,10 +30,19 @@ export default defineConfig({
     },
   ],
 
+  // Clean up test data after all tests complete
+  globalTeardown: "./e2e/global-teardown.ts",
+
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:4321",
+    command: "npm run dev -- --port 3001",
+    url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      // Pass test environment variables to the dev server
+      SUPABASE_URL: process.env.SUPABASE_URL || "",
+      SUPABASE_KEY: process.env.SUPABASE_KEY || "",
+      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+    },
   },
 });
