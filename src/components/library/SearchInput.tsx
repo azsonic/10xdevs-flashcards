@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 
 interface SearchInputProps {
@@ -62,4 +62,3 @@ export function SearchInput({ value, onChange, onSubmit, disabled }: SearchInput
     </form>
   );
 }
-

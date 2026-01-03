@@ -165,12 +165,12 @@ export async function createFlashcard(flashcard: FlashcardToCreate): Promise<Fla
     }
 
     const result: { data: CreateFlashcardsResultDto } = await response.json();
-    
+
     // Return the first (and only) created flashcard
     if (result.data.flashcards.length === 0) {
       throw new Error("No flashcard was created");
     }
-    
+
     return result.data.flashcards[0];
   } catch (error) {
     if (error instanceof Error) {
@@ -179,4 +179,3 @@ export async function createFlashcard(flashcard: FlashcardToCreate): Promise<Fla
     throw new Error("An unexpected error occurred while creating the flashcard");
   }
 }
-

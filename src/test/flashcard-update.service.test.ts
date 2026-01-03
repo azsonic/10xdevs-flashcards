@@ -36,7 +36,9 @@ describe("flashcard update service", () => {
   describe("getFlashcardByIdForUser", () => {
     it("returns flashcard when found", async () => {
       const maybeSingle = vi.fn().mockResolvedValue({ data: baseFlashcard, error: null });
-      const select = vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
+      const select = vi
+        .fn()
+        .mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
       vi.mocked(supabase.from).mockReturnValueOnce({ select } as any);
 
       const result = await getFlashcardByIdForUser({ supabase, id: 1, userId: "user-123" });
@@ -48,7 +50,9 @@ describe("flashcard update service", () => {
 
     it("throws on database error", async () => {
       const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: { message: "db error" } });
-      const select = vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
+      const select = vi
+        .fn()
+        .mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
       vi.mocked(supabase.from).mockReturnValueOnce({ select } as any);
 
       await expect(getFlashcardByIdForUser({ supabase, id: 1, userId: "user-123" })).rejects.toThrow(
@@ -121,4 +125,3 @@ describe("flashcard update service", () => {
     });
   });
 });
-

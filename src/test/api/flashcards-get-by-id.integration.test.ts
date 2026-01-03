@@ -203,7 +203,7 @@ describe("GET /api/flashcards/:id - Integration Tests", () => {
     });
 
     it("should return 500 on unexpected error", async () => {
-       vi.mocked(mockSupabase.from).mockImplementation(() => {
+      vi.mocked(mockSupabase.from).mockImplementation(() => {
         throw new Error("Unexpected crash");
       });
 
@@ -215,4 +215,3 @@ describe("GET /api/flashcards/:id - Integration Tests", () => {
     });
   });
 });
-

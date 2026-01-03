@@ -146,4 +146,3 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
     expect(body.error.code).toBe("DATABASE_ERROR");
   });
 });
-

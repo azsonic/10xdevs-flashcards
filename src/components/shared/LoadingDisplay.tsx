@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import type { LoadingType } from "../lib/types/library.types";
+import type { LoadingType } from "@/lib/types/library.types";
 
 interface LoadingDisplayProps {
   loadingType: LoadingType;
@@ -35,4 +35,3 @@ export function LoadingDisplay({ loadingType }: LoadingDisplayProps) {
     </div>
   );
 }
-

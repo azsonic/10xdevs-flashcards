@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 interface AddManualButtonProps {
@@ -17,4 +17,3 @@ export function AddManualButton({ onClick, disabled }: AddManualButtonProps) {
     </Button>
   );
 }
-

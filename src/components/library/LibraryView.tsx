@@ -1,14 +1,12 @@
-import { useFlashcardLibrary } from "../lib/hooks/useFlashcardLibrary";
+import { useFlashcardLibrary } from "@/lib/hooks/useFlashcardLibrary";
 import { LibraryToolbar } from "./LibraryToolbar";
 import { FlashcardList } from "./FlashcardList";
 import { EmptyState } from "./EmptyState";
-import { PaginationControls } from "./PaginationControls";
-import { EditFlashcardDialog } from "./EditFlashcardDialog";
-import { CreateManualDialog } from "./CreateManualDialog";
-import { DeleteAlertDialog } from "./DeleteAlertDialog";
-import { LoadingDisplay } from "./LoadingDisplay";
-import { Button } from "./ui/button";
-import { Alert, AlertDescription } from "./ui/alert";
+import { EditFlashcardDialog, CreateManualDialog, DeleteAlertDialog } from "./dialogs";
+import { LoadingDisplay } from "@/components/shared";
+import { PaginationControls } from "@/components/shared";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /**
  * Main client-side view component for the flashcard library.
@@ -120,4 +118,3 @@ export function LibraryView() {
     </div>
   );
 }
-

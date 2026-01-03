@@ -50,7 +50,8 @@ E2E_USERNAME=e2e-test@example.com
 E2E_PASSWORD=your-secure-password
 ```
 
-**Important**: 
+**Important**:
+
 - Create a dedicated test user in Supabase for E2E tests
 - Use this user's credentials for `E2E_USERNAME` and `E2E_PASSWORD`
 - The cleanup script will delete all data owned by this user
@@ -93,6 +94,7 @@ The script handles various error scenarios:
 ### 1. Create E2E Test User
 
 In your Supabase project:
+
 1. Go to Authentication → Users
 2. Create a new user:
    - Email: `e2e-test@example.com` (or your preferred email)
@@ -102,6 +104,7 @@ In your Supabase project:
 ### 2. Configure Environment
 
 Add to `.env.test`:
+
 ```env
 E2E_USERNAME=e2e-test@example.com
 E2E_PASSWORD=your-chosen-password
@@ -110,6 +113,7 @@ E2E_PASSWORD=your-chosen-password
 ### 3. Update Test Configuration
 
 If your tests currently create new users for each test, consider updating them to:
+
 - Use the E2E test user credentials
 - Sign in as this user instead of registering new users
 - Or: Keep current approach but use this user for cleanup
@@ -132,6 +136,7 @@ npm run test:e2e
 **Symptom**: No cleanup logs appear after tests complete
 
 **Solutions**:
+
 1. Verify `E2E_USERNAME` and `E2E_PASSWORD` are set in `.env.test`
 2. Check that `.env.test` is being loaded (not `.env`)
 3. Verify the `globalTeardown` setting in `playwright.config.ts`
@@ -141,6 +146,7 @@ npm run test:e2e
 **Symptom**: Cleanup runs but data remains in database
 
 **Solutions**:
+
 1. Verify the E2E user exists in Supabase
 2. Check that tests are using this user's account
 3. Verify RLS policies allow user to delete their own data
@@ -151,6 +157,7 @@ npm run test:e2e
 **Symptom**: "Failed to sign in as E2E user" error
 
 **Solutions**:
+
 1. Confirm credentials in `.env.test` are correct
 2. Verify the user exists in Supabase Auth
 3. Check if email confirmation is required
@@ -191,7 +198,7 @@ CREATE TABLE generation_error_logs (
 ✅ **Simplicity**: Regular authentication is simpler to set up  
 ✅ **RLS Compliant**: Respects database security policies  
 ✅ **Testing**: Same authentication flow as production  
-✅ **Maintainability**: Easier to understand and debug  
+✅ **Maintainability**: Easier to understand and debug
 
 ## Future Improvements
 
@@ -202,4 +209,3 @@ Possible enhancements:
 - [ ] Support for manual cleanup via CLI command
 - [ ] Cleanup dry-run mode for testing
 - [ ] Parallel deletion for faster cleanup
-

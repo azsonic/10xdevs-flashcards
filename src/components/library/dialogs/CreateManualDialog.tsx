@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
-import { FlashcardForm } from "./FlashcardForm";
-import type { FlashcardToCreate } from "../types";
-import type { FlashcardFormData } from "../lib/types/library.types";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FlashcardForm } from "@/components/shared/forms";
+import type { FlashcardToCreate } from "@/types";
+import type { FlashcardFormData } from "@/lib/types/library.types";
 
 interface CreateManualDialogProps {
   isOpen: boolean;
@@ -57,4 +57,3 @@ export function CreateManualDialog({ isOpen, onClose, onCreate }: CreateManualDi
     </Dialog>
   );
 }
-

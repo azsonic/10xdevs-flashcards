@@ -84,10 +84,10 @@ export const GET: APIRoute = async ({ params, locals }) => {
       );
     }
 
-    return new Response(
-      JSON.stringify({ data: flashcard }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ data: flashcard }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     if (error instanceof FlashcardUpdateError) {
       return new Response(

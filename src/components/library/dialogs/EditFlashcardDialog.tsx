@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
-import { FlashcardForm } from "./FlashcardForm";
-import type { FlashcardDto, UpdateFlashcardCommand } from "../types";
-import type { FlashcardFormData } from "../lib/types/library.types";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FlashcardForm } from "@/components/shared/forms";
+import type { FlashcardDto, UpdateFlashcardCommand } from "@/types";
+import type { FlashcardFormData } from "@/lib/types/library.types";
 
 interface EditFlashcardDialogProps {
   isOpen: boolean;
@@ -58,9 +58,7 @@ export function EditFlashcardDialog({ isOpen, onClose, flashcard, onSave }: Edit
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Edit Flashcard</DialogTitle>
-          <DialogDescription>
-            Make changes to your flashcard below. Both fields are required.
-          </DialogDescription>
+          <DialogDescription>Make changes to your flashcard below. Both fields are required.</DialogDescription>
         </DialogHeader>
 
         <FlashcardForm
@@ -77,4 +75,3 @@ export function EditFlashcardDialog({ isOpen, onClose, flashcard, onSave }: Edit
     </Dialog>
   );
 }
-

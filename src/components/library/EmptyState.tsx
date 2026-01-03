@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Search, FileQuestion } from "lucide-react";
 
 interface EmptyStateProps {
@@ -45,4 +45,3 @@ export function EmptyState({ hasSearchQuery, onCreateManual, onClearSearch }: Em
     </div>
   );
 }
-

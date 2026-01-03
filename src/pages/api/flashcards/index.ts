@@ -1,6 +1,11 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { createFlashcards, FlashcardCreationError, listFlashcards, FlashcardListError } from "../../../lib/flashcard.service";
+import {
+  createFlashcards,
+  FlashcardCreationError,
+  listFlashcards,
+  FlashcardListError,
+} from "../../../lib/flashcard.service";
 import type { CreateFlashcardsCommand } from "../../../types";
 
 export const prerender = false;

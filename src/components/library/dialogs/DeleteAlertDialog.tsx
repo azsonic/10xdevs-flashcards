@@ -5,9 +5,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
-import type { FlashcardDto } from "../types";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import type { FlashcardDto } from "@/types";
 
 interface DeleteAlertDialogProps {
   isOpen: boolean;
@@ -63,4 +63,3 @@ export function DeleteAlertDialog({ isOpen, onClose, flashcard, onConfirm, isDel
     </AlertDialog>
   );
 }
-

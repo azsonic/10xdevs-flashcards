@@ -20,4 +20,3 @@ export function LibraryToolbar({ onSearch, onCreateManual, searchQuery, isLoadin
     </div>
   );
 }
-

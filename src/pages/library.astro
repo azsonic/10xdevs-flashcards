@@ -1,6 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { LibraryView } from "../components/LibraryView";
+import Layout from "@/layouts/Layout.astro";
+import { LibraryView } from "@/components/library";
 
 // Server-side authentication check
 const { user } = Astro.locals;
@@ -15,4 +15,3 @@ export const prerender = false;
 <Layout title="Flashcard Library">
   <LibraryView client:load />
 </Layout>
-

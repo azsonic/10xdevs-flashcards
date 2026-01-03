@@ -1,5 +1,5 @@
 import { FlashcardItem } from "./FlashcardItem";
-import type { FlashcardDto } from "../types";
+import type { FlashcardDto } from "@/types";
 
 interface FlashcardListProps {
   flashcards: FlashcardDto[];
@@ -20,4 +20,3 @@ export function FlashcardList({ flashcards, onEdit, onDelete }: FlashcardListPro
     </div>
   );
 }
-

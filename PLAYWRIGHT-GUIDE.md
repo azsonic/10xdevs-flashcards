@@ -204,6 +204,7 @@ BASE_URL=http://localhost:3001
 ```
 
 **Important Notes:**
+
 - `E2E_USERNAME` and `E2E_PASSWORD` are used for authenticated cleanup
 - Create a dedicated test user in Supabase for E2E tests
 - The cleanup script signs in as this user to delete test data
