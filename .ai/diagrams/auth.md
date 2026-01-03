@@ -1,6 +1,7 @@
 # Diagram Auth - Sekwencja Autentykacji
 
 <authentication_analysis>
+
 1. **Przepływy autentykacji**:
    - **Logowanie (Sign In)**: Użytkownik podaje email/hasło -> Supabase weryfikuje -> Zwraca tokeny -> Zapis w cookies -> Przekierowanie.
    - **Rejestracja (Sign Up)**: Użytkownik podaje dane -> Utworzenie konta w Supabase -> Automatyczne logowanie (jeśli email conf wyłączone) lub oczekiwanie.
@@ -23,12 +24,12 @@
 4. **Kroki autentykacji**:
    - Użytkownik wchodzi na stronę chronioną -> Middleware sprawdza cookies -> Brak? Redirect Login.
    - Użytkownik loguje się -> Client SDK wywołuje Supabase -> Supabase zwraca sesję -> Client ustawia cookies (lub wywołuje API callback) -> Przeładowanie/Przekierowanie.
-</authentication_analysis>
+     </authentication_analysis>
 
 ```mermaid
 sequenceDiagram
     autonumber
-    
+
     participant User as Użytkownik
     participant Browser as Przeglądarka (UI)
     participant Middleware as Astro Middleware
@@ -63,10 +64,10 @@ sequenceDiagram
     User->>Browser: Wchodzi na /dashboard
     Browser->>Middleware: GET /dashboard (z Cookies)
     activate Middleware
-    
+
     Middleware->>Supabase: getUser() (Weryfikacja tokena)
     activate Supabase
-    
+
     alt Token ważny
         Supabase-->>Middleware: Zwraca obiekt User
     else Token wygasł
@@ -97,4 +98,3 @@ sequenceDiagram
     deactivate API
     Browser->>User: Wyświetla stronę logowania
 ```
-

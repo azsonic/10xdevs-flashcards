@@ -21,7 +21,7 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
   afterAll(() => {
@@ -78,13 +78,17 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
   });
 
   it("returns 404 when flashcard not found for user", async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+    interface MockQueryResult {
+      data: null;
+      error: null;
+    }
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null } satisfies MockQueryResult);
     const selectFirst = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({ maybeSingle }),
       }),
     });
-    vi.mocked(supabase.from).mockReturnValueOnce({ select: selectFirst } as any);
+    vi.mocked(supabase.from).mockReturnValueOnce({ select: selectFirst } as ReturnType<SupabaseClient["from"]>);
 
     const response = await PATCH(context as APIContext);
     const body = await response.json();
@@ -94,7 +98,11 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
   });
 
   it("updates flashcard and returns 200", async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({ data: existingCard, error: null });
+    interface MockQueryResult {
+      data: FlashcardDto;
+      error: null;
+    }
+    const maybeSingle = vi.fn().mockResolvedValue({ data: existingCard, error: null } satisfies MockQueryResult);
     const selectFirst = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({ maybeSingle }),
@@ -102,15 +110,15 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
     });
 
     const updatedCard = { ...existingCard, front: "Updated front", source: "ai-edited" };
-    const single = vi.fn().mockResolvedValue({ data: updatedCard, error: null });
+    const single = vi.fn().mockResolvedValue({ data: updatedCard, error: null } satisfies MockQueryResult);
     const selectSecond = vi.fn().mockReturnValue({ single });
     const eqSecondB = vi.fn().mockReturnValue({ select: selectSecond });
     const eqSecondA = vi.fn().mockReturnValue({ eq: eqSecondB });
     const update = vi.fn().mockReturnValue({ eq: eqSecondA });
 
     vi.mocked(supabase.from)
-      .mockReturnValueOnce({ select: selectFirst } as any)
-      .mockReturnValueOnce({ update } as any);
+      .mockReturnValueOnce({ select: selectFirst } as ReturnType<SupabaseClient["from"]>)
+      .mockReturnValueOnce({ update } as ReturnType<SupabaseClient["from"]>);
 
     const response = await PATCH(context as APIContext);
     const body = await response.json();
@@ -122,22 +130,30 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
   });
 
   it("returns 500 on update error", async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({ data: existingCard, error: null });
+    interface MockQueryResult {
+      data: FlashcardDto;
+      error: null;
+    }
+    interface MockQueryError {
+      data: null;
+      error: { message: string };
+    }
+    const maybeSingle = vi.fn().mockResolvedValue({ data: existingCard, error: null } satisfies MockQueryResult);
     const selectFirst = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({ maybeSingle }),
       }),
     });
 
-    const single = vi.fn().mockResolvedValue({ data: null, error: { message: "db error" } });
+    const single = vi.fn().mockResolvedValue({ data: null, error: { message: "db error" } } satisfies MockQueryError);
     const selectSecond = vi.fn().mockReturnValue({ single });
     const eqSecondB = vi.fn().mockReturnValue({ select: selectSecond });
     const eqSecondA = vi.fn().mockReturnValue({ eq: eqSecondB });
     const update = vi.fn().mockReturnValue({ eq: eqSecondA });
 
     vi.mocked(supabase.from)
-      .mockReturnValueOnce({ select: selectFirst } as any)
-      .mockReturnValueOnce({ update } as any);
+      .mockReturnValueOnce({ select: selectFirst } as ReturnType<SupabaseClient["from"]>)
+      .mockReturnValueOnce({ update } as ReturnType<SupabaseClient["from"]>);
 
     const response = await PATCH(context as APIContext);
     const body = await response.json();
@@ -146,4 +162,3 @@ describe("PATCH /api/flashcards/:id - Integration", () => {
     expect(body.error.code).toBe("DATABASE_ERROR");
   });
 });
-

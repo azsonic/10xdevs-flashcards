@@ -16,7 +16,7 @@ const { error } = await supabase.auth.signInWithPassword({
 });
 
 // Delete data owned by this user
-await supabase.from('flashcards').delete().neq('id', 0);
+await supabase.from("flashcards").delete().neq("id", 0);
 ```
 
 ### ❌ Alternative (Not Used): Service Role Key
@@ -29,13 +29,13 @@ await supabase.auth.admin.deleteUser(userId);
 
 ## Why This Approach is Better
 
-| Aspect | Regular Auth ✅ | Service Role Key ❌ |
-|--------|----------------|---------------------|
-| **Security** | No admin key exposure | Requires sensitive key |
-| **Complexity** | Simple setup | More complex |
-| **RLS** | Respects policies | Bypasses policies |
-| **Testing** | Same as production | Different from prod |
-| **Risk** | Low (user-scoped) | High (admin access) |
+| Aspect         | Regular Auth ✅       | Service Role Key ❌    |
+| -------------- | --------------------- | ---------------------- |
+| **Security**   | No admin key exposure | Requires sensitive key |
+| **Complexity** | Simple setup          | More complex           |
+| **RLS**        | Respects policies     | Bypasses policies      |
+| **Testing**    | Same as production    | Different from prod    |
+| **Risk**       | Low (user-scoped)     | High (admin access)    |
 
 ## Implementation
 
@@ -60,8 +60,9 @@ await supabase.auth.admin.deleteUser(userId);
 ### Files Modified
 
 1. **`playwright.config.ts`**
+
    ```typescript
-   globalTeardown: "./e2e/global-teardown.ts"
+   globalTeardown: "./e2e/global-teardown.ts";
    ```
 
 2. **`PLAYWRIGHT-GUIDE.md`**
@@ -143,7 +144,7 @@ Cleanup happens automatically!
 ✅ **Reusable** - Same user across multiple test runs  
 ✅ **Safe** - Can only delete data owned by E2E user  
 ✅ **Automatic** - No manual intervention required  
-✅ **Transparent** - Detailed console logging  
+✅ **Transparent** - Detailed console logging
 
 ## Database Tables Cleaned
 
@@ -222,7 +223,7 @@ const supabase = createClient(url, serviceRoleKey);
 
 // ❌ Deletes users by pattern
 const users = await supabase.auth.admin.listUsers();
-const testUsers = users.filter(u => u.email?.match(/test-\d+-\d+@example\.com/));
+const testUsers = users.filter((u) => u.email?.match(/test-\d+-\d+@example\.com/));
 
 // ❌ Cascade delete via foreign keys
 for (const user of testUsers) {
@@ -231,6 +232,7 @@ for (const user of testUsers) {
 ```
 
 **Issues**:
+
 - Requires Service Role Key (security risk)
 - Bypasses RLS policies
 - More complex pattern matching
@@ -247,12 +249,13 @@ await supabase.auth.signInWithPassword({
 });
 
 // ✅ Delete data directly
-await supabase.from('flashcards').delete().neq('id', 0);
-await supabase.from('generations').delete().neq('id', 0);
-await supabase.from('generation_error_logs').delete().neq('id', 0);
+await supabase.from("flashcards").delete().neq("id", 0);
+await supabase.from("generations").delete().neq("id", 0);
+await supabase.from("generation_error_logs").delete().neq("id", 0);
 ```
 
 **Advantages**:
+
 - No admin key needed
 - Respects RLS policies
 - Simpler implementation
@@ -301,4 +304,3 @@ The approach is production-ready and maintainable.
 **Status**: ✅ Implemented and tested  
 **Last Updated**: 2026-01-03  
 **Credit**: Suggested by user - much better than original Service Role Key approach!
-

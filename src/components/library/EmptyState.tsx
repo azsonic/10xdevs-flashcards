@@ -1,9 +1,8 @@
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Search, FileQuestion } from "lucide-react";
 
 interface EmptyStateProps {
   hasSearchQuery: boolean;
-  onCreateManual: () => void;
   onClearSearch: () => void;
 }
 
@@ -11,7 +10,7 @@ interface EmptyStateProps {
  * Displays a friendly message when there are no flashcards to show.
  * Context-aware: different messages for empty library vs. no search results.
  */
-export function EmptyState({ hasSearchQuery, onCreateManual, onClearSearch }: EmptyStateProps) {
+export function EmptyState({ hasSearchQuery, onClearSearch }: EmptyStateProps) {
   if (hasSearchQuery) {
     // No search results
     return (
@@ -21,8 +20,8 @@ export function EmptyState({ hasSearchQuery, onCreateManual, onClearSearch }: Em
         </div>
         <h3 className="text-lg font-semibold mb-2">No flashcards found</h3>
         <p className="text-muted-foreground mb-6 max-w-md">
-          We couldn't find any flashcards matching your search. Try different keywords or clear your search to see all
-          flashcards.
+          We couldn&apos;t find any flashcards matching your search. Try different keywords or clear your search to see
+          all flashcards.
         </p>
         <Button onClick={onClearSearch} variant="outline">
           Clear Search
@@ -41,8 +40,9 @@ export function EmptyState({ hasSearchQuery, onCreateManual, onClearSearch }: Em
       <p className="text-muted-foreground mb-6 max-w-md">
         Get started by creating your first flashcard manually, or generate flashcards from text using AI.
       </p>
-      <Button onClick={onCreateManual}>Create Your First Flashcard</Button>
+      <Button asChild>
+        <a href="/generate">Generate your first set with AI</a>
+      </Button>
     </div>
   );
 }
-

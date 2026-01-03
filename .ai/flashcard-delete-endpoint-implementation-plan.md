@@ -5,6 +5,7 @@
 This endpoint permanently deletes a single flashcard owned by the authenticated user. The deletion is a hard delete operation that removes the flashcard record from the database. Due to the database's foreign key constraints, the `generation_id` field in the `flashcards` table has `ON DELETE SET NULL`, ensuring referential integrity with the `generations` table.
 
 **Key Characteristics:**
+
 - Idempotent operation (multiple DELETE requests to non-existent resource return 404)
 - Requires user authentication and ownership verification
 - Returns 204 No Content on successful deletion (no response body)
@@ -17,6 +18,7 @@ This endpoint permanently deletes a single flashcard owned by the authenticated 
 **URL Structure:** `/api/flashcards/:id`
 
 **Path Parameters:**
+
 - `id` (required, integer) - The unique identifier of the flashcard to delete
   - Must be a positive integer
   - Must be a valid number (not NaN, Infinity, or negative)
@@ -24,6 +26,7 @@ This endpoint permanently deletes a single flashcard owned by the authenticated 
 **Query Parameters:** None
 
 **Request Headers:**
+
 - `Authorization`: Bearer token (handled by Supabase authentication)
 - `Cookie`: Session cookie (alternative authentication method)
 
@@ -34,6 +37,7 @@ This endpoint permanently deletes a single flashcard owned by the authenticated 
 ### Existing Types (from `src/types.ts`)
 
 **ApiErrorResponse:**
+
 ```typescript
 interface ApiErrorResponse {
   error: {
@@ -47,6 +51,7 @@ interface ApiErrorResponse {
 ### New Types to Add
 
 **FlashcardDeletionError** (to be added in `src/lib/flashcard.service.ts`):
+
 ```typescript
 export class FlashcardDeletionError extends Error {
   constructor(
@@ -62,17 +67,15 @@ export class FlashcardDeletionError extends Error {
 ### Validation Schema
 
 **Path Parameter Schema** (using Zod):
+
 ```typescript
 import { z } from "zod";
 
 const deleteFlashcardParamsSchema = z.object({
-  id: z.string()
+  id: z
+    .string()
     .transform((val) => parseInt(val, 10))
-    .pipe(
-      z.number()
-        .int("ID must be an integer")
-        .positive("ID must be a positive number")
-    )
+    .pipe(z.number().int("ID must be an integer").positive("ID must be a positive number")),
 });
 ```
 
@@ -85,30 +88,37 @@ const deleteFlashcardParamsSchema = z.object({
 **Response Body:** Empty (no content)
 
 **Response Headers:**
+
 - No specific headers required
 
 ### Error Responses
 
 #### 400 Bad Request
+
 **Trigger:** Invalid ID format (not a number, negative, zero, NaN, or Infinity)
 
 **Response Body:**
+
 ```json
 {
   "error": {
     "code": "INVALID_ID",
     "message": "Invalid flashcard ID format. ID must be a positive integer.",
     "details": {
-      "issues": [/* Zod validation errors */]
+      "issues": [
+        /* Zod validation errors */
+      ]
     }
   }
 }
 ```
 
 #### 401 Unauthorized
+
 **Trigger:** Missing or invalid authentication token
 
 **Response Body:**
+
 ```json
 {
   "error": {
@@ -119,11 +129,14 @@ const deleteFlashcardParamsSchema = z.object({
 ```
 
 #### 404 Not Found
-**Trigger:** 
+
+**Trigger:**
+
 - Flashcard with the specified ID doesn't exist
 - Flashcard exists but belongs to a different user (authorization failure)
 
 **Response Body:**
+
 ```json
 {
   "error": {
@@ -136,9 +149,11 @@ const deleteFlashcardParamsSchema = z.object({
 **Note:** Both "not found" and "not authorized" scenarios return the same 404 response to prevent information leakage about which flashcards exist in the system.
 
 #### 500 Internal Server Error
+
 **Trigger:** Database connection failure or unexpected server error
 
 **Response Body:**
+
 ```json
 {
   "error": {
@@ -186,12 +201,14 @@ const deleteFlashcardParamsSchema = z.object({
 ### Database Interaction
 
 **Query Structure:**
+
 ```sql
 DELETE FROM flashcards
 WHERE id = $1 AND user_id = $2
 ```
 
 **Supabase Client Call:**
+
 ```typescript
 const { error, count } = await supabase
   .from("flashcards")
@@ -201,6 +218,7 @@ const { error, count } = await supabase
 ```
 
 **Cascade Behavior:**
+
 - The `generation_id` in other flashcards remains unchanged (no cascade)
 - The deleted flashcard's `generation_id` reference is automatically handled by `ON DELETE SET NULL` constraint
 
@@ -211,22 +229,26 @@ const { error, count } = await supabase
 **Mechanism:** Supabase session-based authentication
 
 **Implementation:**
+
 - Retrieve authenticated user session from `context.locals.supabase`
 - Verify session exists before processing deletion
 - Extract user ID from verified session
 
 **Failure Handling:**
+
 - Return 401 Unauthorized if session is missing or invalid
 - Do not expose details about why authentication failed
 
 ### Authorization (IDOR Prevention)
 
 **Protection Strategy:**
+
 - Include `user_id` in the DELETE query's WHERE clause
 - Never rely solely on the flashcard ID for deletion
 - Return 404 for both "not found" and "unauthorized" cases to prevent information disclosure
 
 **Why 404 Instead of 403:**
+
 - Prevents attackers from enumerating valid flashcard IDs
 - Provides consistent user experience (flashcard doesn't exist "for you")
 - Follows principle of least information disclosure
@@ -234,11 +256,13 @@ const { error, count } = await supabase
 ### Input Validation
 
 **ID Parameter Validation:**
+
 - Type checking: Must be parseable as integer
 - Range checking: Must be positive (> 0)
 - Sanitization: Convert string to number, reject special values (NaN, Infinity)
 
 **Protection Against:**
+
 - SQL injection (handled by Supabase parameterized queries)
 - Type confusion attacks
 - Integer overflow (database uses bigserial)
@@ -246,6 +270,7 @@ const { error, count } = await supabase
 ### Rate Limiting Considerations
 
 While not implemented in this endpoint, consider adding:
+
 - Per-user deletion rate limits
 - IP-based rate limiting
 - Monitoring for bulk deletion patterns
@@ -255,6 +280,7 @@ While not implemented in this endpoint, consider adding:
 ### Error Handling Strategy
 
 Follow the existing pattern in `flashcard.service.ts`:
+
 1. Use custom error classes for typed error handling
 2. Log errors server-side with context
 3. Return user-friendly error messages
@@ -262,29 +288,31 @@ Follow the existing pattern in `flashcard.service.ts`:
 
 ### Error Scenarios
 
-| Scenario | Detection | Error Type | HTTP Status | Response Code |
-|----------|-----------|------------|-------------|---------------|
-| Invalid ID format | Zod validation fails | ZodError | 400 | INVALID_ID |
-| ID is negative/zero | Zod validation fails | ZodError | 400 | INVALID_ID |
-| No auth session | `getUser()` returns null | - | 401 | UNAUTHORIZED |
-| Flashcard not found | No rows affected | FlashcardDeletionError | 404 | FLASHCARD_NOT_FOUND |
-| Wrong user ownership | No rows affected | FlashcardDeletionError | 404 | FLASHCARD_NOT_FOUND |
-| Database error | Supabase error | FlashcardDeletionError | 500 | INTERNAL_ERROR |
-| Network timeout | Supabase error | FlashcardDeletionError | 500 | INTERNAL_ERROR |
+| Scenario             | Detection                | Error Type             | HTTP Status | Response Code       |
+| -------------------- | ------------------------ | ---------------------- | ----------- | ------------------- |
+| Invalid ID format    | Zod validation fails     | ZodError               | 400         | INVALID_ID          |
+| ID is negative/zero  | Zod validation fails     | ZodError               | 400         | INVALID_ID          |
+| No auth session      | `getUser()` returns null | -                      | 401         | UNAUTHORIZED        |
+| Flashcard not found  | No rows affected         | FlashcardDeletionError | 404         | FLASHCARD_NOT_FOUND |
+| Wrong user ownership | No rows affected         | FlashcardDeletionError | 404         | FLASHCARD_NOT_FOUND |
+| Database error       | Supabase error           | FlashcardDeletionError | 500         | INTERNAL_ERROR      |
+| Network timeout      | Supabase error           | FlashcardDeletionError | 500         | INTERNAL_ERROR      |
 
 ### Error Logging
 
 **Server-Side Logging:**
+
 ```typescript
 console.error("[deleteFlashcardForUser] Error details", {
   error: error,
   id: id,
   userId: userId, // Safe to log (internal)
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 });
 ```
 
 **What to Log:**
+
 - Error type and message
 - Flashcard ID (for debugging)
 - User ID (for security auditing)
@@ -292,6 +320,7 @@ console.error("[deleteFlashcardForUser] Error details", {
 - Stack trace (for unexpected errors)
 
 **What NOT to Log:**
+
 - Sensitive user data
 - Full database connection strings
 - Authentication tokens
@@ -301,11 +330,13 @@ console.error("[deleteFlashcardForUser] Error details", {
 ### Database Performance
 
 **Query Optimization:**
+
 - The DELETE query uses primary key (`id`) and indexed foreign key (`user_id`)
 - Both fields are indexed, ensuring fast lookups
 - Expected query time: < 10ms for typical cases
 
 **Index Usage:**
+
 ```sql
 -- Primary key index on id (automatic)
 -- Index on user_id (automatic with foreign key)
@@ -394,23 +425,17 @@ export async function deleteFlashcardForUser({
 
   if (error) {
     // eslint-disable-next-line no-console
-    console.error("[deleteFlashcardForUser] Delete error", { 
-      error, 
-      id, 
-      userId 
+    console.error("[deleteFlashcardForUser] Delete error", {
+      error,
+      id,
+      userId,
     });
-    throw new FlashcardDeletionError(
-      "DATABASE_ERROR",
-      "Failed to delete flashcard."
-    );
+    throw new FlashcardDeletionError("DATABASE_ERROR", "Failed to delete flashcard.");
   }
 
   // If no rows were affected, the flashcard doesn't exist or doesn't belong to the user
   if (count === 0) {
-    throw new FlashcardDeletionError(
-      "NOT_FOUND",
-      "Flashcard not found or you do not have permission to delete it."
-    );
+    throw new FlashcardDeletionError("NOT_FOUND", "Flashcard not found or you do not have permission to delete it.");
   }
 }
 ```
@@ -425,13 +450,10 @@ export async function deleteFlashcardForUser({
 import { z } from "zod";
 
 const flashcardIdParamSchema = z.object({
-  id: z.string()
+  id: z
+    .string()
     .transform((val) => parseInt(val, 10))
-    .pipe(
-      z.number()
-        .int("ID must be an integer")
-        .positive("ID must be a positive number")
-    )
+    .pipe(z.number().int("ID must be an integer").positive("ID must be a positive number")),
 });
 ```
 
@@ -445,22 +467,16 @@ const flashcardIdParamSchema = z.object({
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import type { ApiErrorResponse } from "../../../types";
-import {
-  deleteFlashcardForUser,
-  FlashcardDeletionError,
-} from "../../../lib/flashcard.service";
+import { deleteFlashcardForUser, FlashcardDeletionError } from "../../../lib/flashcard.service";
 
 // Prerender must be false for API routes
 export const prerender = false;
 
 const flashcardIdParamSchema = z.object({
-  id: z.string()
+  id: z
+    .string()
     .transform((val) => parseInt(val, 10))
-    .pipe(
-      z.number()
-        .int("ID must be an integer")
-        .positive("ID must be a positive number")
-    )
+    .pipe(z.number().int("ID must be an integer").positive("ID must be a positive number")),
 });
 
 export const DELETE: APIRoute = async (context) => {
@@ -487,7 +503,10 @@ export const DELETE: APIRoute = async (context) => {
 
   // Step 2: Check authentication
   const supabase = context.locals.supabase;
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
     const errorResponse: ApiErrorResponse = {
@@ -564,6 +583,7 @@ export const DELETE: APIRoute = async (context) => {
 **Action:** Ensure all new exports are properly exported (TypeScript should handle this automatically with named exports)
 
 Verify exports include:
+
 - `FlashcardDeletionError`
 - `deleteFlashcardForUser`
 
@@ -602,11 +622,13 @@ Verify exports include:
 **Automated Testing:**
 
 Consider creating unit tests for:
+
 - `deleteFlashcardForUser` function
 - Parameter validation schema
 - Error handling logic
 
 Consider creating integration tests for:
+
 - Full DELETE endpoint flow
 - Authentication/authorization checks
 - Database operations
@@ -616,6 +638,7 @@ Consider creating integration tests for:
 **File:** `.ai/api-plan.md` (or relevant API documentation)
 
 **Action:** Ensure the DELETE endpoint documentation matches the implementation:
+
 - Confirm status codes match implementation
 - Verify error response structures
 - Document any additional behavior or edge cases discovered during implementation
@@ -660,6 +683,7 @@ Consider creating integration tests for:
 ### Related Endpoints
 
 This endpoint is part of the flashcard CRUD operations:
+
 - `GET /api/flashcards` - List flashcards
 - `GET /api/flashcards/:id` - Get single flashcard
 - `POST /api/flashcards` - Create flashcards
@@ -667,8 +691,8 @@ This endpoint is part of the flashcard CRUD operations:
 - `DELETE /api/flashcards/:id` - Delete flashcard (this endpoint)
 
 Ensure consistency across all endpoints regarding:
+
 - Authentication/authorization patterns
 - Error response structures
 - Validation approaches
 - Logging formats
-

@@ -5,6 +5,7 @@
 This endpoint retrieves a paginated list of flashcards belonging to the authenticated user. It supports optional search filtering to find flashcards by their front or back content. The endpoint implements secure, user-scoped queries with pagination to ensure good performance and user experience.
 
 **Key Features:**
+
 - User-scoped data retrieval (only authenticated user's flashcards)
 - Pagination support with configurable page size
 - Optional full-text search across front and back content
@@ -19,6 +20,7 @@ This endpoint retrieves a paginated list of flashcards belonging to the authenti
 ### Query Parameters:
 
 **Optional Parameters:**
+
 - `page` (integer, default: 1)
   - Must be >= 1
   - Determines which page of results to return
@@ -35,6 +37,7 @@ This endpoint retrieves a paginated list of flashcards belonging to the authenti
   - Example: `?search=javascript`
 
 **Example Requests:**
+
 ```
 GET /api/flashcards
 GET /api/flashcards?page=1&limit=20
@@ -43,6 +46,7 @@ GET /api/flashcards?page=2&limit=50&search=python
 ```
 
 ### Request Body:
+
 None (GET request)
 
 ## 3. Used Types
@@ -79,7 +83,7 @@ export interface ApiErrorResponse {
 **Location**: `src/pages/api/flashcards/index.ts` (inline) or `src/lib/schemas/flashcards.schema.ts` (if extracted)
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const ListFlashcardsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -122,6 +126,7 @@ export type ListFlashcardsQuery = z.infer<typeof ListFlashcardsQuerySchema>;
 ### Error Responses:
 
 **401 Unauthorized** - Missing or invalid authentication:
+
 ```json
 {
   "error": {
@@ -132,6 +137,7 @@ export type ListFlashcardsQuery = z.infer<typeof ListFlashcardsQuerySchema>;
 ```
 
 **400 Bad Request** - Invalid query parameters:
+
 ```json
 {
   "error": {
@@ -146,6 +152,7 @@ export type ListFlashcardsQuery = z.infer<typeof ListFlashcardsQuerySchema>;
 ```
 
 **500 Internal Server Error** - Server-side errors:
+
 ```json
 {
   "error": {
@@ -174,24 +181,26 @@ export type ListFlashcardsQuery = z.infer<typeof ListFlashcardsQuerySchema>;
 ### Database Interactions:
 
 **Main Query (Flashcards Retrieval):**
+
 ```typescript
 const { data, error } = await supabase
-  .from('flashcards')
-  .select('*')
-  .eq('user_id', userId)
-  .ilike('front', `%${search}%`) // if search provided
+  .from("flashcards")
+  .select("*")
+  .eq("user_id", userId)
+  .ilike("front", `%${search}%`) // if search provided
   .or(`back.ilike.%${search}%`) // if search provided
-  .order('created_at', { ascending: false })
+  .order("created_at", { ascending: false })
   .range(offset, offset + limit - 1);
 ```
 
 **Count Query (Total Items):**
+
 ```typescript
 const { count, error } = await supabase
-  .from('flashcards')
-  .select('*', { count: 'exact', head: true })
-  .eq('user_id', userId)
-  .ilike('front', `%${search}%`) // if search provided
+  .from("flashcards")
+  .select("*", { count: "exact", head: true })
+  .eq("user_id", userId)
+  .ilike("front", `%${search}%`) // if search provided
   .or(`back.ilike.%${search}%`); // if search provided
 ```
 
@@ -221,7 +230,7 @@ export class FlashcardsService {
 
 ### Authentication:
 
-1. **Session Validation**: 
+1. **Session Validation**:
    - Use `context.locals.supabase.auth.getUser()` to get authenticated user
    - Return 401 if no valid session exists
    - Extract `user.id` for data scoping
@@ -263,11 +272,13 @@ export class FlashcardsService {
 ### Rate Limiting:
 
 Consider implementing rate limiting to prevent:
+
 - Excessive pagination requests
 - Search query abuse
 - Potential DoS attacks
 
 Implementation options:
+
 - Middleware-based rate limiting
 - Cloudflare or reverse proxy rate limiting
 - Supabase edge functions rate limiting
@@ -276,16 +287,16 @@ Implementation options:
 
 ### Error Scenarios:
 
-| Scenario | Status Code | Error Code | Action |
-|----------|-------------|------------|--------|
-| No authentication token | 401 | `UNAUTHORIZED` | Return error, log attempt |
-| Invalid/expired token | 401 | `UNAUTHORIZED` | Return error, log attempt |
-| `page < 1` | 400 | `VALIDATION_ERROR` | Return validation details |
-| `limit < 1` or `limit > 100` | 400 | `VALIDATION_ERROR` | Return validation details |
-| Invalid parameter types | 400 | `VALIDATION_ERROR` | Return Zod error details |
-| Database connection error | 500 | `INTERNAL_ERROR` | Log error, return generic message |
-| Supabase query error | 500 | `INTERNAL_ERROR` | Log error, return generic message |
-| Unexpected exceptions | 500 | `INTERNAL_ERROR` | Log error, return generic message |
+| Scenario                     | Status Code | Error Code         | Action                            |
+| ---------------------------- | ----------- | ------------------ | --------------------------------- |
+| No authentication token      | 401         | `UNAUTHORIZED`     | Return error, log attempt         |
+| Invalid/expired token        | 401         | `UNAUTHORIZED`     | Return error, log attempt         |
+| `page < 1`                   | 400         | `VALIDATION_ERROR` | Return validation details         |
+| `limit < 1` or `limit > 100` | 400         | `VALIDATION_ERROR` | Return validation details         |
+| Invalid parameter types      | 400         | `VALIDATION_ERROR` | Return Zod error details          |
+| Database connection error    | 500         | `INTERNAL_ERROR`   | Log error, return generic message |
+| Supabase query error         | 500         | `INTERNAL_ERROR`   | Log error, return generic message |
+| Unexpected exceptions        | 500         | `INTERNAL_ERROR`   | Log error, return generic message |
 
 ### Error Response Format:
 
@@ -295,14 +306,14 @@ All errors should follow the `ApiErrorResponse` interface:
 return new Response(
   JSON.stringify({
     error: {
-      code: 'ERROR_CODE',
-      message: 'User-friendly message',
+      code: "ERROR_CODE",
+      message: "User-friendly message",
       details: optionalDetails, // Only for 400 errors
     },
   }),
   {
     status: statusCode,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" },
   }
 );
 ```
@@ -320,38 +331,40 @@ return new Response(
 export const GET: APIRoute = async (context) => {
   try {
     // Auth check (early return pattern)
-    const { data: { user }, error: authError } = 
-      await context.locals.supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await context.locals.supabase.auth.getUser();
+
     if (authError || !user) {
       return new Response(
         JSON.stringify({
           error: {
-            code: 'UNAUTHORIZED',
-            message: 'Authentication required',
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
           },
         }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
+        { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Validation (early return pattern)
     const validationResult = ListFlashcardsQuerySchema.safeParse({
-      page: context.url.searchParams.get('page'),
-      limit: context.url.searchParams.get('limit'),
-      search: context.url.searchParams.get('search'),
+      page: context.url.searchParams.get("page"),
+      limit: context.url.searchParams.get("limit"),
+      search: context.url.searchParams.get("search"),
     });
 
     if (!validationResult.success) {
       return new Response(
         JSON.stringify({
           error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid query parameters',
+            code: "VALIDATION_ERROR",
+            message: "Invalid query parameters",
             details: validationResult.error.flatten(),
           },
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -365,22 +378,18 @@ export const GET: APIRoute = async (context) => {
     );
 
     // Success response
-    return new Response(
-      JSON.stringify(result),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (error) {
     // Unexpected errors
-    console.error('Error listing flashcards:', error);
+    console.error("Error listing flashcards:", error);
     return new Response(
       JSON.stringify({
         error: {
-          code: 'INTERNAL_ERROR',
-          message: 'An unexpected error occurred',
+          code: "INTERNAL_ERROR",
+          message: "An unexpected error occurred",
         },
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
@@ -395,7 +404,7 @@ export const GET: APIRoute = async (context) => {
    - Consider composite index on `(user_id, created_at)` for sorted queries
    - For search functionality, consider GIN index on front and back columns:
      ```sql
-     CREATE INDEX idx_flashcards_search ON flashcards 
+     CREATE INDEX idx_flashcards_search ON flashcards
      USING gin(to_tsvector('english', front || ' ' || back));
      ```
 
@@ -411,6 +420,7 @@ export const GET: APIRoute = async (context) => {
 ### Caching Strategy:
 
 Consider implementing caching for:
+
 - **Response Caching**: Cache paginated results for short duration (e.g., 30 seconds)
 - **Count Caching**: Cache total count separately with longer TTL
 - **Cache Invalidation**: Invalidate on POST/PATCH/DELETE operations
@@ -426,10 +436,8 @@ Consider implementing caching for:
 
 1. **Large Result Sets**: User with thousands of flashcards
    - Mitigation: Enforce max limit, use cursor-based pagination in future
-   
 2. **Search Performance**: Full-text search on large datasets
    - Mitigation: Use database indexes, consider search debouncing on frontend
-   
 3. **Count Queries**: Expensive on large tables
    - Mitigation: Cache counts, consider approximate counts for very large datasets
 
@@ -593,4 +601,3 @@ In the GET handler:
 ### Environment Variables:
 
 No additional environment variables needed (uses existing Supabase configuration).
-

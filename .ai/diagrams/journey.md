@@ -25,7 +25,7 @@
    - **Generowanie**: Proces tworzenia fiszek z tekstu.
    - **Review**: Przegląd i edycja wygenerowanych kandydatów.
    - **Nauka**: Tryb Spaced Repetition.
-</user_journey_analysis>
+     </user_journey_analysis>
 
 ```mermaid
 stateDiagram-v2
@@ -46,7 +46,7 @@ stateDiagram-v2
         state "Logowanie" as EkranLogowania {
             [*] --> WprowadzanieDanychLog
             WprowadzanieDanychLog --> WeryfikacjaLog: Kliknij "Zaloguj"
-            
+
             state if_login_ok <<choice>>
             WeryfikacjaLog --> if_login_ok
             if_login_ok --> [*]: Sukces (Przejdź do Dashboard)
@@ -56,7 +56,7 @@ stateDiagram-v2
         state "Rejestracja" as EkranRejestracji {
             [*] --> WprowadzanieDanychReg
             WprowadzanieDanychReg --> TworzenieKonta: Kliknij "Zarejestruj"
-            
+
             state if_reg_ok <<choice>>
             TworzenieKonta --> if_reg_ok
             if_reg_ok --> [*]: Sukces (Auto-login)
@@ -113,4 +113,3 @@ stateDiagram-v2
     %% Wylogowanie
     StanZalogowany --> StanNiezalogowany: Wyloguj
 ```
-

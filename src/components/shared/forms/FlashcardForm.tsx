@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Textarea } from "./ui/textarea";
-import { Label } from "./ui/label";
-import { Button } from "./ui/button";
-import type { FlashcardFormData, FlashcardFormErrors } from "../lib/types/library.types";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import type { FlashcardFormData, FlashcardFormErrors } from "@/lib/types/library.types";
 
 interface FlashcardFormProps {
   initialValues?: { front: string; back: string };
@@ -104,11 +104,7 @@ export function FlashcardForm({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="front">Front</Label>
-          <span
-            className={`text-sm ${
-              frontOverLimit ? "text-red-600 font-medium" : "text-muted-foreground"
-            }`}
-          >
+          <span className={`text-sm ${frontOverLimit ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
             {frontCharCount}/{MAX_FRONT_LENGTH}
           </span>
         </div>
@@ -128,11 +124,7 @@ export function FlashcardForm({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="back">Back</Label>
-          <span
-            className={`text-sm ${
-              backOverLimit ? "text-red-600 font-medium" : "text-muted-foreground"
-            }`}
-          >
+          <span className={`text-sm ${backOverLimit ? "text-red-600 font-medium" : "text-muted-foreground"}`}>
             {backCharCount}/{MAX_BACK_LENGTH}
           </span>
         </div>
@@ -160,4 +152,3 @@ export function FlashcardForm({
     </form>
   );
 }
-

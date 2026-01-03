@@ -267,6 +267,7 @@ Test Execution Flow:
 ---
 
 **Legend:**
+
 - ⚙️ Configuration/Base
 - 🧩 Reusable Component
 - 📄 Page Object
@@ -275,4 +276,3 @@ Test Execution Flow:
 - 📚 Documentation
 - 🔖 Test ID Annotated
 - 📖 Reference Guide
-

@@ -38,7 +38,7 @@ describe("GET /api/flashcards - Integration Tests", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
   afterAll(() => {
@@ -164,6 +164,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should accept valid page and limit parameters", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards?page=1&limit=20");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -171,20 +180,20 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValueOnce({
                 data: mockFlashcards,
                 error: null,
-              }),
+              } satisfies MockQueryResult),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: 2,
             error: null,
-          }),
+          } satisfies MockCountResult),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
 
@@ -196,6 +205,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should return paginated flashcards with default parameters", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -203,20 +221,20 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValueOnce({
                 data: mockFlashcards,
                 error: null,
-              }),
+              } satisfies MockQueryResult),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: 2,
             error: null,
-          }),
+          } satisfies MockCountResult),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
       const body = await response.json();
@@ -236,6 +254,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should return empty array when no flashcards exist", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -243,20 +270,20 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValueOnce({
                 data: [],
                 error: null,
-              }),
+              } satisfies MockQueryResult),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: 0,
             error: null,
-          }),
+          } satisfies MockCountResult),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
       const body = await response.json();
@@ -272,6 +299,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
 
       const searchResults = [mockFlashcards[0]];
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -280,12 +316,12 @@ describe("GET /api/flashcards - Integration Tests", () => {
                 range: vi.fn().mockResolvedValueOnce({
                   data: searchResults,
                   error: null,
-                }),
+                } satisfies MockQueryResult),
               }),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
@@ -293,10 +329,10 @@ describe("GET /api/flashcards - Integration Tests", () => {
             or: vi.fn().mockResolvedValueOnce({
               count: 1,
               error: null,
-            }),
+            } satisfies MockCountResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
       const body = await response.json();
@@ -309,6 +345,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should handle custom page and limit parameters", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards?page=2&limit=10");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -316,20 +361,20 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValueOnce({
                 data: mockFlashcards,
                 error: null,
-              }),
+              } satisfies MockQueryResult),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: 25,
             error: null,
-          }),
+          } satisfies MockCountResult),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
       const body = await response.json();
@@ -348,6 +393,11 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should return 500 when database query fails", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards");
 
+      interface MockQueryError {
+        data: null;
+        error: { message: string; code: string };
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
@@ -355,11 +405,11 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValue({
                 data: null,
                 error: { message: "Database error", code: "DB_ERROR" },
-              }),
+              } satisfies MockQueryError),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
       const body = await response.json();
@@ -371,6 +421,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should return 500 when count query fails", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountError {
+        count: null;
+        error: { message: string; code: string };
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -378,20 +437,20 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValueOnce({
                 data: mockFlashcards,
                 error: null,
-              }),
+              } satisfies MockQueryResult),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: null,
             error: { message: "Count query failed", code: "DB_ERROR" },
-          }),
+          } satisfies MockCountError),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
       const body = await response.json();
@@ -421,6 +480,15 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should set correct Content-Type header", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
@@ -428,20 +496,20 @@ describe("GET /api/flashcards - Integration Tests", () => {
               range: vi.fn().mockResolvedValueOnce({
                 data: mockFlashcards,
                 error: null,
-              }),
+              } satisfies MockQueryResult),
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: 2,
             error: null,
-          }),
+          } satisfies MockCountResult),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await GET(mockContext as APIContext);
 
@@ -453,12 +521,21 @@ describe("GET /api/flashcards - Integration Tests", () => {
     it("should filter flashcards by authenticated user_id", async () => {
       mockContext.url = new URL("http://localhost:4321/api/flashcards");
 
+      interface MockQueryResult {
+        data: FlashcardDto[];
+        error: null;
+      }
+      interface MockCountResult {
+        count: number;
+        error: null;
+      }
+
       const eqMock = vi.fn().mockReturnValueOnce({
         order: vi.fn().mockReturnValueOnce({
           range: vi.fn().mockResolvedValueOnce({
             data: mockFlashcards,
             error: null,
-          }),
+          } satisfies MockQueryResult),
         }),
       });
 
@@ -466,16 +543,16 @@ describe("GET /api/flashcards - Integration Tests", () => {
         select: vi.fn().mockReturnValueOnce({
           eq: eqMock,
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce({
             count: 2,
             error: null,
-          }),
+          } satisfies MockCountResult),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await GET(mockContext as APIContext);
 
@@ -484,4 +561,3 @@ describe("GET /api/flashcards - Integration Tests", () => {
     });
   });
 });
-

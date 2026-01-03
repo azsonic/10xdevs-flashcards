@@ -5,6 +5,7 @@
 ### What It Does
 
 Automatically cleans up test data after E2E tests by:
+
 1. Signing in as the E2E test user
 2. Deleting all data created by this user
 3. Signing out
@@ -20,6 +21,7 @@ Automatically cleans up test data after E2E tests by:
 ### 1. Create E2E Test User in Supabase
 
 In Supabase Dashboard → Authentication → Users:
+
 - Email: `e2e-test@example.com`
 - Password: Choose a strong password
 
@@ -101,4 +103,3 @@ See `e2e/TEARDOWN.md` for complete details.
 
 **Status:** ✅ Ready to use  
 **Last Updated:** 2026-01-03
-

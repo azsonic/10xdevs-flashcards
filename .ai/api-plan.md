@@ -357,17 +357,21 @@ Permanently delete a single flashcard owned by the authenticated user.
 **Error Responses**:
 
 - `400 Bad Request`: Invalid ID format (not a number, negative, zero, or non-integer)
+
   ```json
   {
     "error": {
       "code": "INVALID_ID",
       "message": "Invalid flashcard ID format. ID must be a positive integer.",
-      "details": [/* Zod validation errors */]
+      "details": [
+        /* Zod validation errors */
+      ]
     }
   }
   ```
 
 - `401 Unauthorized`: Missing or invalid authentication
+
   ```json
   {
     "error": {
@@ -378,6 +382,7 @@ Permanently delete a single flashcard owned by the authenticated user.
   ```
 
 - `404 Not Found`: Flashcard does not exist or does not belong to user (IDOR protection)
+
   ```json
   {
     "error": {
@@ -398,6 +403,7 @@ Permanently delete a single flashcard owned by the authenticated user.
   ```
 
 **Implementation Notes**:
+
 - This is a hard delete operation that permanently removes the flashcard from the database
 - The operation is idempotent (multiple DELETE requests to the same resource return 404 after the first successful deletion)
 - IDOR protection: Returns 404 for both "not found" and "unauthorized" cases to prevent information leakage

@@ -26,26 +26,31 @@ e2e/
 ## 🚀 Quick Start
 
 ### Run All Tests
+
 ```bash
 npm run test:e2e
 ```
 
 ### Run Specific Test File
+
 ```bash
 npx playwright test e2e/auth.spec.ts
 ```
 
 ### Run in UI Mode (Interactive)
+
 ```bash
 npx playwright test --ui
 ```
 
 ### Run with Headed Browser
+
 ```bash
 npx playwright test --headed
 ```
 
 ### Generate Test Report
+
 ```bash
 npx playwright show-report
 ```
@@ -59,6 +64,7 @@ npx playwright show-report
 ## 🎯 Test Coverage
 
 ### Authentication Flow (`auth.spec.ts`)
+
 - ✅ User registration (US-001)
 - ✅ User login (US-002)
 - ✅ User logout (US-003)
@@ -73,13 +79,13 @@ This project uses the Page Object Model (POM) pattern for maintainable and reusa
 
 ### Available Page Objects
 
-| Class | Description | Path |
-|-------|-------------|------|
-| `BasePage` | Base class with common functionality | `page-objects/base.page.ts` |
-| `NavbarComponent` | Navigation bar (all pages) | `page-objects/navbar.component.ts` |
-| `LoginPage` | Login page (`/login`) | `page-objects/login.page.ts` |
-| `RegisterPage` | Registration page (`/register`) | `page-objects/register.page.ts` |
-| `DashboardPage` | Dashboard (`/`) | `page-objects/dashboard.page.ts` |
+| Class             | Description                          | Path                               |
+| ----------------- | ------------------------------------ | ---------------------------------- |
+| `BasePage`        | Base class with common functionality | `page-objects/base.page.ts`        |
+| `NavbarComponent` | Navigation bar (all pages)           | `page-objects/navbar.component.ts` |
+| `LoginPage`       | Login page (`/login`)                | `page-objects/login.page.ts`       |
+| `RegisterPage`    | Registration page (`/register`)      | `page-objects/register.page.ts`    |
+| `DashboardPage`   | Dashboard (`/`)                      | `page-objects/dashboard.page.ts`   |
 
 ### Example Usage
 
@@ -148,8 +154,8 @@ See [POM.md](./POM.md) for detailed guidelines.
 ```typescript
 import { testUtils } from "./utils/test-helpers";
 
-const email = testUtils.generateRandomEmail();  // test1234567890@example.com
-const username = testUtils.generateRandomUsername();  // user1234567890
+const email = testUtils.generateRandomEmail(); // test1234567890@example.com
+const username = testUtils.generateRandomUsername(); // user1234567890
 ```
 
 ### Custom Expectations
@@ -184,7 +190,7 @@ test.describe("Protected Feature", () => {
   test.beforeEach(async ({ page }) => {
     const registerPage = new RegisterPage(page);
     const dashboardPage = new DashboardPage(page);
-    
+
     // Setup: Register and login
     await page.goto("/");
     await registerPage.register(email, password);
@@ -203,12 +209,12 @@ Each test should be independent:
 
 ```typescript
 test("test 1", async ({ page }) => {
-  const email = testUtils.generateRandomEmail();  // Unique per test
+  const email = testUtils.generateRandomEmail(); // Unique per test
   // ...
 });
 
 test("test 2", async ({ page }) => {
-  const email = testUtils.generateRandomEmail();  // Different email
+  const email = testUtils.generateRandomEmail(); // Different email
   // ...
 });
 ```
@@ -218,10 +224,10 @@ test("test 2", async ({ page }) => {
 ```typescript
 test("should show error for invalid credentials", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  
+
   await loginPage.navigate();
   await loginPage.login("wrong@example.com", "wrongpassword");
-  
+
   await loginPage.verifyGeneralError("Invalid login credentials");
 });
 ```
@@ -246,10 +252,10 @@ npx playwright test --debug
 
 ```typescript
 // Using page directly
-await page.screenshot({ path: 'screenshot.png' });
+await page.screenshot({ path: "screenshot.png" });
 
 // Using page object
-await loginPage.screenshot({ path: 'login-page.png', fullPage: true });
+await loginPage.screenshot({ path: "login-page.png", fullPage: true });
 ```
 
 ## 📊 Test Reports
@@ -261,6 +267,7 @@ npx playwright show-report
 ```
 
 The report includes:
+
 - Test results (pass/fail)
 - Execution time
 - Screenshots on failure
@@ -269,6 +276,7 @@ The report includes:
 ## 🔄 CI/CD Integration
 
 Tests run automatically on:
+
 - Pull requests
 - Commits to main branch
 
@@ -293,4 +301,3 @@ When adding new tests:
 ---
 
 For detailed POM documentation, see [POM.md](./POM.md)
-

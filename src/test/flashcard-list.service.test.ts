@@ -3,6 +3,24 @@ import { listFlashcards, FlashcardListError } from "@/lib/flashcard.service";
 import type { SupabaseClient } from "@/db/supabase.client";
 import type { FlashcardDto } from "@/types";
 
+// Type aliases for mock query results
+interface MockDataQueryResult {
+  data: FlashcardDto[];
+  error: null;
+}
+interface MockCountQueryResult {
+  count: number;
+  error: null;
+}
+interface MockDataQueryError {
+  data: null;
+  error: { message: string; code: string };
+}
+interface MockCountQueryError {
+  count: null;
+  error: { message: string; code: string };
+}
+
 // Mock flashcard data for testing
 const mockFlashcards: FlashcardDto[] = [
   {
@@ -42,7 +60,7 @@ describe("listFlashcards Service", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
   afterAll(() => {
@@ -64,11 +82,11 @@ describe("listFlashcards Service", () => {
 
   describe("Successful retrieval", () => {
     it("should retrieve flashcards with default pagination", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 3,
         error: null,
       };
@@ -82,14 +100,14 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       // Mock the query chain for count
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -112,11 +130,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should handle pagination correctly with multiple pages", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: [mockFlashcards[0]],
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 50,
         error: null,
       };
@@ -129,13 +147,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -153,11 +171,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should calculate total_pages correctly with partial last page", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 25,
         error: null,
       };
@@ -170,13 +188,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -189,11 +207,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should handle empty results", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: [],
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 0,
         error: null,
       };
@@ -206,13 +224,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -236,11 +254,11 @@ describe("listFlashcards Service", () => {
   describe("Search functionality", () => {
     it("should filter flashcards by search term", async () => {
       const searchResults = [mockFlashcards[0]];
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: searchResults,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 1,
         error: null,
       };
@@ -255,7 +273,7 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
@@ -263,7 +281,7 @@ describe("listFlashcards Service", () => {
             or: vi.fn().mockResolvedValueOnce(countQuery),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -278,11 +296,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should trim search term before filtering", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: [],
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 0,
         error: null,
       };
@@ -297,7 +315,7 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
@@ -305,7 +323,7 @@ describe("listFlashcards Service", () => {
             or: vi.fn().mockResolvedValueOnce(countQuery),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -320,11 +338,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should handle empty search term as no search", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 3,
         error: null,
       };
@@ -338,13 +356,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -358,11 +376,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should handle whitespace-only search term as no search", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 3,
         error: null,
       };
@@ -375,13 +393,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -397,11 +415,11 @@ describe("listFlashcards Service", () => {
 
   describe("Pagination calculations", () => {
     it("should calculate correct offset for page 1", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 50,
         error: null,
       };
@@ -416,13 +434,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await listFlashcards({
         supabase: mockSupabase,
@@ -436,11 +454,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should calculate correct offset for page 3", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: [],
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 50,
         error: null,
       };
@@ -455,13 +473,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await listFlashcards({
         supabase: mockSupabase,
@@ -475,11 +493,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should handle custom limit values", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 100,
         error: null,
       };
@@ -494,13 +512,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await listFlashcards({
         supabase: mockSupabase,
@@ -516,7 +534,7 @@ describe("listFlashcards Service", () => {
 
   describe("Error handling", () => {
     it("should throw FlashcardListError when data query fails", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryError = {
         data: null,
         error: { message: "Database connection failed", code: "DB_ERROR" },
       };
@@ -529,7 +547,7 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await expect(
         listFlashcards({
@@ -542,7 +560,7 @@ describe("listFlashcards Service", () => {
     });
 
     it("should throw FlashcardListError with correct message when data query fails", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryError = {
         data: null,
         error: { message: "Database connection failed", code: "DB_ERROR" },
       };
@@ -555,7 +573,7 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await expect(
         listFlashcards({
@@ -568,11 +586,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should throw FlashcardListError when count query fails", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryError = {
         count: null,
         error: { message: "Count query failed", code: "DB_ERROR" },
       };
@@ -586,14 +604,14 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       // Second call for count query - this will fail
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await expect(
         listFlashcards({
@@ -606,11 +624,11 @@ describe("listFlashcards Service", () => {
     });
 
     it("should throw FlashcardListError with correct message when count query fails", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryError = {
         count: null,
         error: { message: "Count query failed", code: "DB_ERROR" },
       };
@@ -624,14 +642,14 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       // Second call for count query - this will fail
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await expect(
         listFlashcards({
@@ -644,7 +662,7 @@ describe("listFlashcards Service", () => {
     });
 
     it("should handle null count gracefully", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: [],
         error: null,
       };
@@ -661,13 +679,13 @@ describe("listFlashcards Service", () => {
             }),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const result = await listFlashcards({
         supabase: mockSupabase,
@@ -684,11 +702,11 @@ describe("listFlashcards Service", () => {
 
   describe("User isolation", () => {
     it("should filter by user_id", async () => {
-      const dataQuery = {
+      const dataQuery: MockDataQueryResult = {
         data: mockFlashcards,
         error: null,
       };
-      const countQuery = {
+      const countQuery: MockCountQueryResult = {
         count: 3,
         error: null,
       };
@@ -703,13 +721,13 @@ describe("listFlashcards Service", () => {
         select: vi.fn().mockReturnValueOnce({
           eq: eqMock,
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         select: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockResolvedValueOnce(countQuery),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await listFlashcards({
         supabase: mockSupabase,
@@ -723,4 +741,3 @@ describe("listFlashcards Service", () => {
     });
   });
 });
-

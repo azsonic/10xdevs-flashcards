@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CandidateCard } from "@/components/CandidateCard";
+import { CandidateCard } from "@/components/generation";
 import type { FlashcardCandidateViewItem } from "@/lib/store/generation-store";
 
 describe("CandidateCard Component", () => {

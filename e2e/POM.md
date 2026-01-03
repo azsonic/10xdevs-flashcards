@@ -29,6 +29,7 @@ e2e/
 Base class that all page objects extend. Provides common functionality:
 
 **Key Methods:**
+
 - `goto(path: string)` - Navigate to a URL
 - `waitForPageLoad()` - Wait for page to load
 - `getByTestId(testId: string)` - Get element by test ID
@@ -37,6 +38,7 @@ Base class that all page objects extend. Provides common functionality:
 - `screenshot(options)` - Take screenshot
 
 **Usage:**
+
 ```typescript
 export class MyPage extends BasePage {
   constructor(page: Page) {
@@ -52,10 +54,12 @@ export class MyPage extends BasePage {
 Represents the navigation bar component present on all pages.
 
 **Elements:**
+
 - Guest state: `loginLink`, `loginButton`, `registerLink`, `registerButton`
 - Authenticated state: `userEmail`, `logoutForm`, `logoutButton`
 
 **Key Methods:**
+
 - `clickLogin()` - Navigate to login page
 - `clickRegister()` - Navigate to register page
 - `clickLogout()` - Logout user
@@ -65,10 +69,11 @@ Represents the navigation bar component present on all pages.
 - `getUserEmail()` - Get displayed user email
 
 **Usage:**
+
 ```typescript
 const navbar = new NavbarComponent(page);
 await navbar.clickRegister();
-await navbar.verifyUserLoggedIn('test@example.com');
+await navbar.verifyUserLoggedIn("test@example.com");
 ```
 
 ---
@@ -78,12 +83,14 @@ await navbar.verifyUserLoggedIn('test@example.com');
 Represents the registration page at `/register`.
 
 **Elements:**
+
 - Form inputs: `emailInput`, `passwordInput`, `confirmPasswordInput`, `submitButton`
 - Links: `loginLink`
 - Errors: `generalError`, `emailError`, `passwordError`, `confirmPasswordError`
 - Loading: `loadingSpinner`
 
 **Key Methods:**
+
 - `navigate()` - Go to register page
 - `fillEmail(email: string)` - Fill email field
 - `fillPassword(password: string)` - Fill password field
@@ -97,10 +104,11 @@ Represents the registration page at `/register`.
 - `verifyGeneralError(message: string)` - Verify general error message
 
 **Usage:**
+
 ```typescript
 const registerPage = new RegisterPage(page);
 await registerPage.navigate();
-await registerPage.register('test@example.com', 'password123');
+await registerPage.register("test@example.com", "password123");
 ```
 
 ---
@@ -110,12 +118,14 @@ await registerPage.register('test@example.com', 'password123');
 Represents the login page at `/login`.
 
 **Elements:**
+
 - Form inputs: `emailInput`, `passwordInput`, `submitButton`
 - Links: `registerLink`, `forgotPasswordLink`
 - Errors: `generalError`, `emailError`, `passwordError`
 - Loading: `loadingSpinner`
 
 **Key Methods:**
+
 - `navigate()` - Go to login page
 - `fillEmail(email: string)` - Fill email field
 - `fillPassword(password: string)` - Fill password field
@@ -129,10 +139,11 @@ Represents the login page at `/login`.
 - `clickForgotPasswordLink()` - Navigate to forgot password page
 
 **Usage:**
+
 ```typescript
 const loginPage = new LoginPage(page);
 await loginPage.navigate();
-await loginPage.login('test@example.com', 'password123');
+await loginPage.login("test@example.com", "password123");
 ```
 
 ---
@@ -142,14 +153,17 @@ await loginPage.login('test@example.com', 'password123');
 Represents the main dashboard/home page at `/`.
 
 **Elements:**
+
 - `welcomeSection` - Main welcome section
 
 **Key Methods:**
+
 - `navigate()` - Go to dashboard
 - `verifyPageLoaded()` - Verify page is loaded
 - `waitForDashboard()` - Wait for dashboard after authentication
 
 **Usage:**
+
 ```typescript
 const dashboardPage = new DashboardPage(page);
 await dashboardPage.waitForDashboard();
@@ -176,19 +190,19 @@ test("complete auth cycle", async ({ page }) => {
   await page.goto("/");
   await navbar.clickRegister();
   await registerPage.register("test@example.com", "password123");
-  
+
   // Verify logged in
   await dashboardPage.waitForDashboard();
   await navbar.verifyUserLoggedIn("test@example.com");
-  
+
   // Logout
   await navbar.clickLogout();
   await loginPage.verifyPageLoaded();
-  
+
   // Login
   await loginPage.login("test@example.com", "password123");
   await dashboardPage.waitForDashboard();
-  
+
   // Logout again
   await navbar.clickLogout();
 });
@@ -199,12 +213,12 @@ test("complete auth cycle", async ({ page }) => {
 ```typescript
 test("should validate email format", async ({ page }) => {
   const loginPage = new LoginPage(page);
-  
+
   await loginPage.navigate();
   await loginPage.fillEmail("invalid-email");
   await loginPage.fillPassword("password123");
   await loginPage.emailInput.blur();
-  
+
   await loginPage.verifyEmailError("Invalid email address");
 });
 ```
@@ -233,11 +247,13 @@ test.describe("My Tests", () => {
 ### 2. Use High-Level Methods
 
 ✅ **Good:**
+
 ```typescript
 await registerPage.register(email, password);
 ```
 
 ❌ **Bad:**
+
 ```typescript
 await registerPage.fillEmail(email);
 await registerPage.fillPassword(password);
@@ -250,6 +266,7 @@ await registerPage.submit();
 Page objects should provide actions and verifications, but test logic should remain in test files.
 
 ✅ **Good:**
+
 ```typescript
 // In test file
 test("should allow registration", async () => {
@@ -260,6 +277,7 @@ test("should allow registration", async () => {
 ```
 
 ❌ **Bad:**
+
 ```typescript
 // In page object
 async registerAndVerify(email: string, password: string) {
@@ -301,7 +319,7 @@ Use the test utilities for generating unique test data:
 import { testUtils } from "./utils/test-helpers";
 
 const testUser = {
-  email: testUtils.generateRandomEmail(),  // test1234567890@example.com
+  email: testUtils.generateRandomEmail(), // test1234567890@example.com
   password: "TestPassword123!",
 };
 ```
@@ -336,6 +354,7 @@ All page objects use `data-test-id` attributes for element selection. See `TEST-
 **Convention:** `{component}-{element}-{type}`
 
 Examples:
+
 - `login-email-input`
 - `register-submit-button`
 - `nav-logout-button`
@@ -354,6 +373,7 @@ Examples:
 5. Export from `index.ts`
 
 **Example:**
+
 ```typescript
 import { Page, Locator, expect } from "@playwright/test";
 import { BasePage } from "./base.page";
@@ -408,4 +428,3 @@ export class ForgotPasswordPage extends BasePage {
 - [TEST-IDS.md](../TEST-IDS.md) - Complete test ID reference
 - [PLAYWRIGHT-GUIDE.md](../PLAYWRIGHT-GUIDE.md) - Playwright setup and configuration
 - [TESTING.md](../TESTING.md) - Overall testing strategy
-

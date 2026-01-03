@@ -19,6 +19,7 @@ curl -X GET "http://localhost:3000/api/flashcards" \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "data": [
@@ -45,12 +46,14 @@ curl -X GET "http://localhost:3000/api/flashcards" \
 ### 2. Pagination Tests
 
 #### Page 2 with limit 10
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards?page=2&limit=10" \
   -H "Cookie: YOUR_SESSION_COOKIE"
 ```
 
 #### Custom limit
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards?limit=50" \
   -H "Cookie: YOUR_SESSION_COOKIE"
@@ -59,12 +62,14 @@ curl -X GET "http://localhost:3000/api/flashcards?limit=50" \
 ### 3. Search Tests
 
 #### Search by term
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards?search=javascript" \
   -H "Cookie: YOUR_SESSION_COOKIE"
 ```
 
 #### Combined search and pagination
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards?search=algorithm&page=1&limit=10" \
   -H "Cookie: YOUR_SESSION_COOKIE"
@@ -73,11 +78,13 @@ curl -X GET "http://localhost:3000/api/flashcards?search=algorithm&page=1&limit=
 ### 4. Error Cases
 
 #### Without authentication (401)
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards"
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": {
@@ -88,12 +95,14 @@ curl -X GET "http://localhost:3000/api/flashcards"
 ```
 
 #### Invalid page parameter (400)
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards?page=0" \
   -H "Cookie: YOUR_SESSION_COOKIE"
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": {
@@ -105,6 +114,7 @@ curl -X GET "http://localhost:3000/api/flashcards?page=0" \
 ```
 
 #### Invalid limit parameter (400)
+
 ```bash
 curl -X GET "http://localhost:3000/api/flashcards?limit=101" \
   -H "Cookie: YOUR_SESSION_COOKIE"
@@ -122,19 +132,23 @@ curl -X GET "http://localhost:3000/api/flashcards?limit=101" \
 Create a new Postman collection with the following requests:
 
 #### 1. List Flashcards (Default)
+
 - **Method**: GET
 - **URL**: `http://localhost:3000/api/flashcards`
 - **Headers**: (cookies auto-managed if logged in via Postman)
 
 #### 2. List with Pagination
+
 - **Method**: GET
 - **URL**: `http://localhost:3000/api/flashcards?page=2&limit=10`
 
 #### 3. Search Flashcards
+
 - **Method**: GET
 - **URL**: `http://localhost:3000/api/flashcards?search=react`
 
 #### 4. Test Validation
+
 - **Method**: GET
 - **URL**: `http://localhost:3000/api/flashcards?page=-1`
 - **Expected**: 400 error
@@ -145,29 +159,30 @@ Create a new Postman collection with the following requests:
 
 ```javascript
 // Fetch flashcards (assuming you're logged in)
-fetch('/api/flashcards')
-  .then(r => r.json())
+fetch("/api/flashcards")
+  .then((r) => r.json())
   .then(console.log);
 
 // With pagination
-fetch('/api/flashcards?page=2&limit=10')
-  .then(r => r.json())
+fetch("/api/flashcards?page=2&limit=10")
+  .then((r) => r.json())
   .then(console.log);
 
 // With search
-fetch('/api/flashcards?search=javascript')
-  .then(r => r.json())
+fetch("/api/flashcards?search=javascript")
+  .then((r) => r.json())
   .then(console.log);
 
 // Test error handling
-fetch('/api/flashcards?page=0')
-  .then(r => r.json())
+fetch("/api/flashcards?page=0")
+  .then((r) => r.json())
   .then(console.log);
 ```
 
 ## Verification Checklist
 
 ### Functionality
+
 - [ ] Returns paginated flashcards for authenticated user
 - [ ] Default pagination works (page=1, limit=20)
 - [ ] Custom pagination parameters work
@@ -177,11 +192,13 @@ fetch('/api/flashcards?page=0')
 - [ ] Pagination metadata is accurate (total_items, total_pages)
 
 ### Authentication
+
 - [ ] Returns 401 without authentication
 - [ ] Only returns flashcards for authenticated user
 - [ ] Does not expose other users' flashcards
 
 ### Validation
+
 - [ ] Rejects page < 1 (400 error)
 - [ ] Rejects limit < 1 (400 error)
 - [ ] Rejects limit > 100 (400 error)
@@ -190,6 +207,7 @@ fetch('/api/flashcards?page=0')
 - [ ] Trims search parameter whitespace
 
 ### Edge Cases
+
 - [ ] Works with empty database (0 flashcards)
 - [ ] Works with 1 flashcard
 - [ ] Works with many flashcards (>100)
@@ -198,6 +216,7 @@ fetch('/api/flashcards?page=0')
 - [ ] Returns correct total_pages calculation
 
 ### Performance
+
 - [ ] Response time is reasonable (<500ms for typical queries)
 - [ ] Search doesn't cause significant slowdown
 - [ ] Large datasets are handled efficiently
@@ -205,18 +224,22 @@ fetch('/api/flashcards?page=0')
 ## Common Issues & Solutions
 
 ### Issue: 401 Unauthorized
+
 - **Cause**: Not logged in or session expired
 - **Solution**: Login again at `/login`
 
 ### Issue: Empty results when flashcards exist
+
 - **Cause**: Flashcards belong to different user
 - **Solution**: Verify you're testing with the correct user account
 
 ### Issue: Validation errors on valid parameters
+
 - **Cause**: Parameter type coercion failing
 - **Solution**: Ensure parameters are properly formatted
 
 ### Issue: Search returns no results
+
 - **Cause**: Case sensitivity or search term doesn't match
 - **Solution**: Try broader search terms (search is case-insensitive with ILIKE)
 
@@ -227,4 +250,3 @@ fetch('/api/flashcards?page=0')
 - Flashcards are ordered by `created_at DESC` (newest first)
 - Maximum limit is capped at 100 items per page
 - Page numbers start at 1 (not 0)
-

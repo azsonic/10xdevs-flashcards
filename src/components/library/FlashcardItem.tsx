@@ -1,6 +1,6 @@
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import type { FlashcardDto } from "../types";
+import type { FlashcardDto } from "@/types";
 
 interface FlashcardItemProps {
   flashcard: FlashcardDto;
@@ -77,4 +77,3 @@ export function FlashcardItem({ flashcard, onEdit, onDelete }: FlashcardItemProp
     </div>
   );
 }
-

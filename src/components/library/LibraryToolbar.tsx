@@ -15,9 +15,8 @@ interface LibraryToolbarProps {
 export function LibraryToolbar({ onSearch, onCreateManual, searchQuery, isLoading }: LibraryToolbarProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-      <SearchInput value={searchQuery} onChange={() => {}} onSubmit={onSearch} disabled={isLoading} />
+      <SearchInput value={searchQuery} onChange={onSearch} onSubmit={onSearch} disabled={isLoading} />
       <AddManualButton onClick={onCreateManual} disabled={isLoading} />
     </div>
   );
 }
-

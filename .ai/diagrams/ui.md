@@ -48,7 +48,7 @@ flowchart TD
         PageLogin["/login (Login Page)"]:::page
         PageRegister["/register (Register Page)"]:::page
         PageHome["/ (Dashboard)"]:::page
-        
+
         subgraph "API Routes"
             ApiSignOut["/api/auth/signout"]:::logic
             ApiCallback["/api/auth/callback"]:::logic
@@ -77,7 +77,7 @@ flowchart TD
     Layout -->|Gość| PageLogin
     Layout -->|Gość| PageRegister
     Layout -->|Zalogowany| PageHome
-    
+
     %% Relacje - Struktura Stron
     PageLogin --- CompLoginForm
     PageRegister --- CompRegisterForm
