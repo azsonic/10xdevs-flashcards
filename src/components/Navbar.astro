@@ -23,7 +23,9 @@ const { user } = Astro.locals;
         {
           user ? (
             <>
-              <span class="text-sm text-muted-foreground mr-2" data-test-id="nav-user-email">{user.email}</span>
+              <span class="text-sm text-muted-foreground mr-2" data-test-id="nav-user-email">
+                {user.email}
+              </span>
               <form action="/api/auth/signout" method="post" data-test-id="nav-logout-form">
                 <Button variant="ghost" size="sm" type="submit" data-test-id="nav-logout-button">
                   Logout
