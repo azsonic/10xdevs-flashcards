@@ -49,10 +49,10 @@ export function LoginForm() {
         return;
       }
 
-      // Success - redirect to dashboard
+      // Success - redirect to generate page
       // Use window.location to ensure fresh server state with cookies
       // eslint-disable-next-line react-compiler/react-compiler
-      window.location.href = "/";
+      window.location.href = "/generate";
     } catch {
       setError("An unexpected error occurred");
       setIsLoading(false);
