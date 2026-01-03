@@ -1,0 +1,54 @@
+---
+import Layout from "@/layouts/Layout.astro";
+
+// Server-side authentication check
+const { user } = Astro.locals;
+
+if (!user) {
+  return Astro.redirect("/login");
+}
+
+export const prerender = false;
+---
+
+<Layout title="Study Mode">
+  <div class="container mx-auto px-4 py-16 max-w-2xl">
+    <div class="text-center space-y-6">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-10 w-10 text-primary"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+      </div>
+
+      <h1 class="text-4xl font-bold tracking-tight">Study Mode</h1>
+
+      <p class="text-xl text-muted-foreground">Page under construction.</p>
+
+      <p class="text-muted-foreground max-w-md mx-auto">
+        We're working hard to bring you an amazing spaced repetition study experience. This feature will help you master
+        your flashcards efficiently.
+      </p>
+
+      <div class="pt-8">
+        <a
+          href="/generate"
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+        >
+          Generate Flashcards
+        </a>
+        <a
+          href="/library"
+          class="ml-4 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+        >
+          View Library
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -2,6 +2,14 @@
 import { Button } from "@/components/ui/button";
 
 const { user } = Astro.locals;
+const currentPath = Astro.url.pathname;
+
+// Helper function to determine active state
+const isActive = (path: string) => currentPath === path;
+const getLinkClass = (path: string) => {
+  const baseClass = "transition-colors hover:text-foreground/80";
+  return isActive(path) ? `${baseClass} text-foreground font-semibold` : `${baseClass} text-foreground/60`;
+};
 ---
 
 <header
@@ -9,14 +17,27 @@ const { user } = Astro.locals;
 >
   <div class="container flex h-14 items-center px-4 md:px-8 mx-auto">
     <div class="mr-4 hidden md:flex">
-      <a class="mr-6 flex items-center space-x-2" href="/">
+      <a class="mr-6 flex items-center space-x-2" href={user ? "/generate" : "/"}>
         <span class="hidden font-bold sm:inline-block">10xDevs Flashcards</span>
       </a>
-      <nav class="flex items-center space-x-6 text-sm font-medium">
-        <a class="transition-colors hover:text-foreground/80 text-foreground/60" href="/library">Library</a>
-        <a class="transition-colors hover:text-foreground/80 text-foreground/60" href="/study">Study</a>
-        <a class="transition-colors hover:text-foreground/80 text-foreground/60" href="/generate">Generate</a>
-      </nav>
+      {
+        user && (
+          <nav class="flex items-center space-x-6 text-sm font-medium">
+            <a class={getLinkClass("/generate")} href="/generate">
+              Generate
+            </a>
+            <a class={getLinkClass("/library")} href="/library">
+              Library
+            </a>
+            <a class={getLinkClass("/study")} href="/study">
+              Study
+            </a>
+            <a class={getLinkClass("/techstack")} href="/techstack">
+              Tech Stack
+            </a>
+          </nav>
+        )
+      }
     </div>
     <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
       <div class="w-full flex-1 md:w-auto md:flex-none"></div>

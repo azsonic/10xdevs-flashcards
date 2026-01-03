@@ -3,6 +3,15 @@ import { FlashcardUpdateError, getFlashcardByIdForUser, updateFlashcardForUser }
 import type { SupabaseClient } from "@/db/supabase.client";
 import type { FlashcardDto } from "@/types";
 
+interface MockQueryResult {
+  data: FlashcardDto;
+  error: null;
+}
+interface MockQueryError {
+  data: null;
+  error: { message: string };
+}
+
 const baseFlashcard: FlashcardDto = {
   id: 1,
   user_id: "user-123",
@@ -19,7 +28,7 @@ describe("flashcard update service", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
   afterAll(() => {
@@ -35,11 +44,11 @@ describe("flashcard update service", () => {
 
   describe("getFlashcardByIdForUser", () => {
     it("returns flashcard when found", async () => {
-      const maybeSingle = vi.fn().mockResolvedValue({ data: baseFlashcard, error: null });
+      const maybeSingle = vi.fn().mockResolvedValue({ data: baseFlashcard, error: null } satisfies MockQueryResult);
       const select = vi
         .fn()
         .mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
-      vi.mocked(supabase.from).mockReturnValueOnce({ select } as any);
+      vi.mocked(supabase.from).mockReturnValueOnce({ select } as ReturnType<SupabaseClient["from"]>);
 
       const result = await getFlashcardByIdForUser({ supabase, id: 1, userId: "user-123" });
 
@@ -49,11 +58,13 @@ describe("flashcard update service", () => {
     });
 
     it("throws on database error", async () => {
-      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: { message: "db error" } });
+      const maybeSingle = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: { message: "db error" } } satisfies MockQueryError);
       const select = vi
         .fn()
         .mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ maybeSingle }) }) });
-      vi.mocked(supabase.from).mockReturnValueOnce({ select } as any);
+      vi.mocked(supabase.from).mockReturnValueOnce({ select } as ReturnType<SupabaseClient["from"]>);
 
       await expect(getFlashcardByIdForUser({ supabase, id: 1, userId: "user-123" })).rejects.toThrow(
         FlashcardUpdateError
@@ -65,12 +76,12 @@ describe("flashcard update service", () => {
     it("promotes ai-full to ai-edited when content changes", async () => {
       const updatedCard = { ...baseFlashcard, front: "Updated front", source: "ai-edited" };
 
-      const single = vi.fn().mockResolvedValue({ data: updatedCard, error: null });
+      const single = vi.fn().mockResolvedValue({ data: updatedCard, error: null } satisfies MockQueryResult);
       const select = vi.fn().mockReturnValue({ single });
       const eqSecond = vi.fn().mockReturnValue({ select });
       const eqFirst = vi.fn().mockReturnValue({ eq: eqSecond });
       const update = vi.fn().mockReturnValue({ eq: eqFirst });
-      vi.mocked(supabase.from).mockReturnValueOnce({ update } as any);
+      vi.mocked(supabase.from).mockReturnValueOnce({ update } as ReturnType<SupabaseClient["from"]>);
 
       const result = await updateFlashcardForUser({
         supabase,
@@ -86,12 +97,12 @@ describe("flashcard update service", () => {
 
     it("keeps ai-full when content unchanged", async () => {
       const updatedCard = { ...baseFlashcard, source: "ai-full" };
-      const single = vi.fn().mockResolvedValue({ data: updatedCard, error: null });
+      const single = vi.fn().mockResolvedValue({ data: updatedCard, error: null } satisfies MockQueryResult);
       const select = vi.fn().mockReturnValue({ single });
       const eqSecond = vi.fn().mockReturnValue({ select });
       const eqFirst = vi.fn().mockReturnValue({ eq: eqSecond });
       const update = vi.fn().mockReturnValue({ eq: eqFirst });
-      vi.mocked(supabase.from).mockReturnValueOnce({ update } as any);
+      vi.mocked(supabase.from).mockReturnValueOnce({ update } as ReturnType<SupabaseClient["from"]>);
 
       const result = await updateFlashcardForUser({
         supabase,
@@ -106,12 +117,12 @@ describe("flashcard update service", () => {
     });
 
     it("throws FlashcardUpdateError on update failure", async () => {
-      const single = vi.fn().mockResolvedValue({ data: null, error: { message: "fail" } });
+      const single = vi.fn().mockResolvedValue({ data: null, error: { message: "fail" } } satisfies MockQueryError);
       const select = vi.fn().mockReturnValue({ single });
       const eqSecond = vi.fn().mockReturnValue({ select });
       const eqFirst = vi.fn().mockReturnValue({ eq: eqSecond });
       const update = vi.fn().mockReturnValue({ eq: eqFirst });
-      vi.mocked(supabase.from).mockReturnValueOnce({ update } as any);
+      vi.mocked(supabase.from).mockReturnValueOnce({ update } as ReturnType<SupabaseClient["from"]>);
 
       await expect(
         updateFlashcardForUser({

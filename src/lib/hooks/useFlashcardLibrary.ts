@@ -225,8 +225,7 @@ export function useFlashcardLibrary() {
   // Initial fetch on mount
   useEffect(() => {
     fetchFlashcards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchFlashcards]);
 
   return {
     // State

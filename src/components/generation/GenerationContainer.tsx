@@ -101,9 +101,9 @@ export function GenerationContainer() {
 
       toast.success(`Saved ${result.created_count} flashcard${result.created_count === 1 ? "" : "s"} to your library!`);
 
-      // Redirect to dashboard after a short delay
+      // Reset to input step to generate more flashcards
       setTimeout(() => {
-        window.location.href = "/";
+        reset();
       }, 1500);
     } catch (err) {
       if (err instanceof ApiError) {

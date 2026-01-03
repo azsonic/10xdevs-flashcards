@@ -14,7 +14,7 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(() => {
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
 
   afterAll(() => {
@@ -92,16 +92,21 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
       mockContext.params = { id: "3.0" };
 
       // Mock successful deletion for this valid ID
+      interface MockQueryResult {
+        data: null;
+        error: null;
+        count: number;
+      }
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             eq: vi.fn().mockResolvedValueOnce({
               error: null,
               count: 1,
-            }),
+            } satisfies MockQueryResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await DELETE(mockContext as APIContext);
 
@@ -112,10 +117,14 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
 
   describe("Authentication", () => {
     it("should return 401 when user is not authenticated", async () => {
+      interface MockAuthResult {
+        data: { user: null };
+        error: null;
+      }
       vi.mocked(mockSupabase.auth.getUser).mockResolvedValueOnce({
         data: { user: null },
         error: null,
-      } as any);
+      } satisfies MockAuthResult);
 
       const response = await DELETE(mockContext as APIContext);
       const body = await response.json();
@@ -130,10 +139,14 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
     });
 
     it("should return 401 when auth error occurs", async () => {
+      interface MockAuthError {
+        data: { user: null };
+        error: { message: string };
+      }
       vi.mocked(mockSupabase.auth.getUser).mockResolvedValueOnce({
         data: { user: null },
         error: { message: "Auth error" },
-      } as any);
+      } satisfies MockAuthError);
 
       const response = await DELETE(mockContext as APIContext);
       const body = await response.json();
@@ -145,16 +158,21 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
 
   describe("Successful Deletion", () => {
     it("should return 204 No Content when flashcard is deleted successfully", async () => {
+      interface MockQueryResult {
+        data: null;
+        error: null;
+        count: number;
+      }
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             eq: vi.fn().mockResolvedValueOnce({
               error: null,
               count: 1,
-            }),
+            } satisfies MockQueryResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await DELETE(mockContext as APIContext);
 
@@ -163,10 +181,15 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
     });
 
     it("should use both id and user_id in delete query", async () => {
+      interface MockQueryResult {
+        data: null;
+        error: null;
+        count: number;
+      }
       const eqMock = vi.fn().mockResolvedValueOnce({
         error: null,
         count: 1,
-      });
+      } satisfies MockQueryResult);
 
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
@@ -174,7 +197,7 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
             eq: eqMock,
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await DELETE(mockContext as APIContext);
 
@@ -185,16 +208,21 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
 
   describe("Authorization & Not Found", () => {
     it("should return 404 when flashcard does not exist", async () => {
+      interface MockQueryResult {
+        data: null;
+        error: null;
+        count: number;
+      }
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             eq: vi.fn().mockResolvedValueOnce({
               error: null,
               count: 0, // No rows affected
-            }),
+            } satisfies MockQueryResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await DELETE(mockContext as APIContext);
       const body = await response.json();
@@ -206,16 +234,21 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
 
     it("should return 404 when flashcard belongs to different user", async () => {
       // This scenario is indistinguishable from not found (count = 0)
+      interface MockQueryResult {
+        data: null;
+        error: null;
+        count: number;
+      }
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             eq: vi.fn().mockResolvedValueOnce({
               error: null,
               count: 0, // No rows affected due to user_id mismatch
-            }),
+            } satisfies MockQueryResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await DELETE(mockContext as APIContext);
       const body = await response.json();
@@ -227,16 +260,21 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
 
   describe("Error Handling", () => {
     it("should return 500 when database error occurs", async () => {
+      interface MockQueryError {
+        data: null;
+        error: { message: string; code: string };
+        count: null;
+      }
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             eq: vi.fn().mockResolvedValueOnce({
               error: { message: "Database connection failed", code: "DB_ERROR" },
               count: null,
-            }),
+            } satisfies MockQueryError),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const response = await DELETE(mockContext as APIContext);
       const body = await response.json();
@@ -259,6 +297,11 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
     });
 
     it("should log error details for debugging", async () => {
+      interface MockQueryError {
+        data: null;
+        error: { message: string; code: string };
+        count: null;
+      }
       const dbError = { message: "Connection timeout", code: "TIMEOUT" };
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
@@ -266,10 +309,10 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
             eq: vi.fn().mockResolvedValueOnce({
               error: dbError,
               count: null,
-            }),
+            } satisfies MockQueryError),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       await DELETE(mockContext as APIContext);
 
@@ -287,16 +330,21 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
   describe("Idempotency", () => {
     it("should return 404 on second delete attempt (idempotent behavior)", async () => {
       // First deletion succeeds
+      interface MockQueryResult {
+        data: null;
+        error: null;
+        count: number;
+      }
       vi.mocked(mockSupabase.from).mockReturnValueOnce({
         delete: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             eq: vi.fn().mockResolvedValueOnce({
               error: null,
               count: 1,
-            }),
+            } satisfies MockQueryResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const firstResponse = await DELETE(mockContext as APIContext);
       expect(firstResponse.status).toBe(204);
@@ -308,10 +356,10 @@ describe("DELETE /api/flashcards/:id - Integration Tests", () => {
             eq: vi.fn().mockResolvedValueOnce({
               error: null,
               count: 0,
-            }),
+            } satisfies MockQueryResult),
           }),
         }),
-      } as any);
+      } as ReturnType<SupabaseClient["from"]>);
 
       const secondResponse = await DELETE(mockContext as APIContext);
       const body = await secondResponse.json();

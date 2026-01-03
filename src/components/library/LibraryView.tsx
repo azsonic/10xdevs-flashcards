@@ -73,13 +73,7 @@ export function LibraryView() {
       {isLoading && <LoadingDisplay loadingType={loadingType} />}
 
       {/* Empty State */}
-      {showEmptyState && (
-        <EmptyState
-          hasSearchQuery={searchQuery.length > 0}
-          onCreateManual={openCreateDialog}
-          onClearSearch={() => handleSearch("")}
-        />
-      )}
+      {showEmptyState && <EmptyState hasSearchQuery={searchQuery.length > 0} onClearSearch={() => handleSearch("")} />}
 
       {/* Flashcard List */}
       {!isLoading && hasFlashcards && (

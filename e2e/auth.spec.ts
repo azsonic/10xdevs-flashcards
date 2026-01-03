@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { LoginPage, RegisterPage, DashboardPage, NavbarComponent } from "./page-objects";
+import { LoginPage, RegisterPage, NavbarComponent, GeneratePage } from "./page-objects";
 import { testUtils } from "./utils/test-helpers";
 
 /**
@@ -30,7 +30,7 @@ test.describe.serial("Authentication E2E Tests", () => {
   test.describe("Authentication Flow", () => {
     let registerPage: RegisterPage;
     let loginPage: LoginPage;
-    let dashboardPage: DashboardPage;
+    let generatePage: GeneratePage;
     let navbar: NavbarComponent;
 
     const testUser = {
@@ -41,7 +41,7 @@ test.describe.serial("Authentication E2E Tests", () => {
     test.beforeEach(async ({ page }) => {
       registerPage = new RegisterPage(page);
       loginPage = new LoginPage(page);
-      dashboardPage = new DashboardPage(page);
+      generatePage = new GeneratePage(page);
       navbar = new NavbarComponent(page);
     });
 
@@ -55,11 +55,13 @@ test.describe.serial("Authentication E2E Tests", () => {
       await registerPage.fillConfirmPassword(testUser.password);
       await registerPage.submit();
 
-      await dashboardPage.waitForDashboard();
+      await generatePage.waitForGenerate();
       await navbar.verifyUserLoggedIn(testUser.email);
     });
 
-    test("Complete authentication cycle: register → dashboard → logout → login → logout", async ({ page }) => {
+    test("Complete authentication cycle: register → generate → logout → login → generate → logout", async ({
+      page,
+    }) => {
       const uniqueUser = {
         email: testUtils.generateRandomEmail(),
         password: "TestPassword123!",
@@ -69,14 +71,14 @@ test.describe.serial("Authentication E2E Tests", () => {
       await navbar.clickRegister();
       await registerPage.register(uniqueUser.email, uniqueUser.password);
 
-      await dashboardPage.waitForDashboard();
+      await generatePage.waitForGenerate();
       await navbar.verifyUserLoggedIn(uniqueUser.email);
 
       await navbar.clickLogout();
       await loginPage.verifyPageLoaded();
 
       await loginPage.login(uniqueUser.email, uniqueUser.password);
-      await dashboardPage.waitForDashboard();
+      await generatePage.waitForGenerate();
       await navbar.verifyUserLoggedIn(uniqueUser.email);
 
       await navbar.clickLogout();
