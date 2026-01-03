@@ -342,13 +342,13 @@ Update an existing flashcard.
 
 #### DELETE /api/flashcards/:id
 
-Delete a flashcard permanently.
+Permanently delete a single flashcard owned by the authenticated user.
 
 **Authentication**: Required
 
 **Path Parameters**:
 
-- `id` (integer, required) - Flashcard ID
+- `id` (integer, required) - Flashcard ID (must be a positive integer)
 
 **Request Payload**: None
 
@@ -356,9 +356,52 @@ Delete a flashcard permanently.
 
 **Error Responses**:
 
+- `400 Bad Request`: Invalid ID format (not a number, negative, zero, or non-integer)
+  ```json
+  {
+    "error": {
+      "code": "INVALID_ID",
+      "message": "Invalid flashcard ID format. ID must be a positive integer.",
+      "details": [/* Zod validation errors */]
+    }
+  }
+  ```
+
 - `401 Unauthorized`: Missing or invalid authentication
-- `404 Not Found`: Flashcard does not exist or does not belong to user
-- `400 Bad Request`: Invalid ID format
+  ```json
+  {
+    "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Authentication required. Please log in to continue."
+    }
+  }
+  ```
+
+- `404 Not Found`: Flashcard does not exist or does not belong to user (IDOR protection)
+  ```json
+  {
+    "error": {
+      "code": "FLASHCARD_NOT_FOUND",
+      "message": "Flashcard not found or you do not have permission to delete it."
+    }
+  }
+  ```
+
+- `500 Internal Server Error`: Database error or unexpected server error
+  ```json
+  {
+    "error": {
+      "code": "INTERNAL_ERROR",
+      "message": "An unexpected error occurred while processing your request."
+    }
+  }
+  ```
+
+**Implementation Notes**:
+- This is a hard delete operation that permanently removes the flashcard from the database
+- The operation is idempotent (multiple DELETE requests to the same resource return 404 after the first successful deletion)
+- IDOR protection: Returns 404 for both "not found" and "unauthorized" cases to prevent information leakage
+- The `generation_id` field in other flashcards remains unchanged (no cascade behavior)
 
 ---
 

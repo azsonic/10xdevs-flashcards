@@ -1,9 +1,22 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { createFlashcards, FlashcardCreationError } from "../../../lib/flashcard.service";
+import { createFlashcards, FlashcardCreationError, listFlashcards, FlashcardListError } from "../../../lib/flashcard.service";
 import type { CreateFlashcardsCommand } from "../../../types";
 
 export const prerender = false;
+
+// ================================================================
+// VALIDATION SCHEMAS
+// ================================================================
+
+/**
+ * Validation schema for listing flashcards query parameters
+ */
+const ListFlashcardsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().optional(),
+});
 
 const FlashcardSchema = z.object({
   front: z.string().min(1).max(200),
@@ -26,6 +39,99 @@ const CreateFlashcardsSchema = z
       });
     }
   });
+
+// ================================================================
+// GET HANDLER - List Flashcards
+// ================================================================
+
+/**
+ * GET /api/flashcards
+ * Retrieves a paginated list of flashcards for the authenticated user.
+ * Supports optional search filtering by front or back content.
+ */
+export const GET: APIRoute = async ({ url, locals }) => {
+  const { supabase, user } = locals;
+
+  // Authentication check - early return pattern
+  if (!user) {
+    return new Response(
+      JSON.stringify({
+        error: {
+          code: "UNAUTHORIZED",
+          message: "Authentication required",
+        },
+      }),
+      { status: 401, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // Extract and validate query parameters
+  const queryParams = {
+    page: url.searchParams.get("page") ?? undefined,
+    limit: url.searchParams.get("limit") ?? undefined,
+    search: url.searchParams.get("search") ?? undefined,
+  };
+
+  const validation = ListFlashcardsQuerySchema.safeParse(queryParams);
+
+  if (!validation.success) {
+    return new Response(
+      JSON.stringify({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Invalid query parameters",
+          details: validation.error.flatten(),
+        },
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // Call service layer to retrieve flashcards
+  try {
+    const result = await listFlashcards({
+      supabase,
+      userId: user.id,
+      page: validation.data.page,
+      limit: validation.data.limit,
+      search: validation.data.search,
+    });
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    if (error instanceof FlashcardListError) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: error.code,
+            message: error.message,
+          },
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Unexpected errors
+    // eslint-disable-next-line no-console
+    console.error("[GET /api/flashcards] Unexpected error:", error);
+    return new Response(
+      JSON.stringify({
+        error: {
+          code: "INTERNAL_ERROR",
+          message: "An unexpected error occurred",
+        },
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
+};
+
+// ================================================================
+// POST HANDLER - Create Flashcards
+// ================================================================
 
 export const POST: APIRoute = async ({ request, locals }) => {
   const { supabase, user } = locals;
