@@ -15,15 +15,12 @@ export interface FlashcardValidationResult {
 
 /**
  * Validates flashcard front and back content
- * 
+ *
  * @param front - The front text of the flashcard
  * @param back - The back text of the flashcard
  * @returns Validation result with validity status and error messages
  */
-export function validateFlashcardContent(
-  front: string,
-  back: string
-): FlashcardValidationResult {
+export function validateFlashcardContent(front: string, back: string): FlashcardValidationResult {
   const errors: string[] = [];
 
   const trimmedFront = front.trim();
@@ -53,7 +50,7 @@ export function validateFlashcardContent(
 
 /**
  * Gets the character counter color class based on length and max length
- * 
+ *
  * @param currentLength - Current trimmed text length
  * @param maxLength - Maximum allowed length
  * @returns Tailwind color class
@@ -67,7 +64,7 @@ export function getCharacterCounterColor(currentLength: number, maxLength: numbe
 
 /**
  * Trims whitespace from flashcard content
- * 
+ *
  * @param content - The content to trim
  * @returns Trimmed content
  */
@@ -80,4 +77,3 @@ export function trimFlashcardContent(content: { front: string; back: string }): 
     back: content.back.trim(),
   };
 }
-
