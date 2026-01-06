@@ -129,7 +129,7 @@ export class TestApiClient {
   /**
    * Get a specific flashcard by ID
    */
-  async getFlashcard(id: string): Promise<Database["public"]["Tables"]["flashcards"]["Row"] | null> {
+  async getFlashcard(id: number): Promise<Database["public"]["Tables"]["flashcards"]["Row"] | null> {
     const { data, error } = await this.supabase.from("flashcards").select("*").eq("id", id).single();
 
     if (error) {
@@ -145,7 +145,7 @@ export class TestApiClient {
   /**
    * Delete a specific flashcard
    */
-  async deleteFlashcard(id: string): Promise<void> {
+  async deleteFlashcard(id: number): Promise<void> {
     const { error } = await this.supabase.from("flashcards").delete().eq("id", id);
 
     if (error) {
