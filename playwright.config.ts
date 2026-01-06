@@ -51,6 +51,7 @@ export default defineConfig({
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
       E2E_USERNAME: process.env.E2E_USERNAME ?? "",
       E2E_PASSWORD: process.env.E2E_PASSWORD ?? "",
+      E2E_USERNAME_ID: process.env.E2E_USERNAME_ID ?? "",
       E2E_AUTH_USERNAME: process.env.E2E_AUTH_USERNAME ?? "",
       E2E_AUTH_PASSWORD: process.env.E2E_AUTH_PASSWORD ?? "",
     },
