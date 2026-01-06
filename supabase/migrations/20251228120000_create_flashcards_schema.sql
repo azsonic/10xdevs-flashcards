@@ -147,12 +147,15 @@ create index if not exists generation_error_logs_user_id_idx on public.generatio
 -- Purpose: Generic trigger function to automatically update the updated_at column
 -- -----------------------------------------------------------------------------
 create or replace function public.handle_updated_at()
-returns trigger as $$
+returns trigger
+language plpgsql
+set search_path = public
+as $$
 begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$$;
 
 -- Add comment for trigger function
 comment on function public.handle_updated_at is 'Trigger function that automatically updates the updated_at column to the current timestamp';
