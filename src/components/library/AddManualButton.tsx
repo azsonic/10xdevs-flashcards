@@ -11,7 +11,12 @@ interface AddManualButtonProps {
  */
 export function AddManualButton({ onClick, disabled }: AddManualButtonProps) {
   return (
-    <Button onClick={onClick} disabled={disabled} className="whitespace-nowrap">
+    <Button
+      onClick={onClick}
+      disabled={disabled}
+      className="whitespace-nowrap"
+      data-test-id="library-add-manual-button"
+    >
       <Plus className="h-4 w-4 mr-2" />
       Add Manual
     </Button>

@@ -38,7 +38,7 @@ export function CreateManualDialog({ isOpen, onClose, onCreate }: CreateManualDi
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px]" data-test-id="create-manual-dialog">
         <DialogHeader>
           <DialogTitle>Create Flashcard</DialogTitle>
           <DialogDescription>

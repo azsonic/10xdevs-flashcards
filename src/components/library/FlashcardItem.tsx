@@ -23,7 +23,8 @@ export function FlashcardItem({ flashcard, onEdit, onDelete }: FlashcardItemProp
     },
   };
 
-  const source = sourceConfig[flashcard.source] || sourceConfig.manual;
+  const sourceKey = flashcard.source as keyof typeof sourceConfig;
+  const source = sourceConfig[sourceKey] ?? sourceConfig.manual;
 
   return (
     <div className="group relative flex flex-col rounded-lg border bg-card shadow-sm transition-shadow hover:shadow-md">

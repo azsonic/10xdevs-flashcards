@@ -53,11 +53,12 @@ This document lists all `data-test-id` attributes used in the authentication flo
 
 ### Authenticated State (Logged In)
 
-| Element       | Test ID             | Description                                     |
-| ------------- | ------------------- | ----------------------------------------------- |
-| User email    | `nav-user-email`    | Display of logged-in user's email               |
-| Logout form   | `nav-logout-form`   | Form that handles logout                        |
-| Logout button | `nav-logout-button` | Button to trigger logout (Click this to logout) |
+| Element       | Test ID              | Description                                     |
+| ------------- | -------------------- | ----------------------------------------------- |
+| User email    | `nav-user-email`     | Display of logged-in user's email               |
+| Library link  | `nav-library-link`   | Link to library page                            |
+| Logout form   | `nav-logout-form`    | Form that handles logout                        |
+| Logout button | `nav-logout-button`  | Button to trigger logout (Click this to logout) |
 
 ---
 
@@ -249,6 +250,121 @@ test("complete authentication flow", async ({ page }) => {
 
 ---
 
+## Library Manual Creation Flow
+
+### Scenario Steps:
+
+1. Go to Library page
+2. Click on "Add Manual" button
+3. Fill in flashcard front and back
+4. Click "Create" button
+5. Logout
+
+---
+
+## Library Page Components
+
+### LibraryToolbar (`src/components/library/LibraryToolbar.tsx`)
+
+| Element          | Test ID                       | Description                                |
+| ---------------- | ----------------------------- | ------------------------------------------ |
+| Add Manual button| `library-add-manual-button`   | Button to open create manual dialog        |
+
+### CreateManualDialog (`src/components/library/dialogs/CreateManualDialog.tsx`)
+
+| Element          | Test ID                       | Description                                |
+| ---------------- | ----------------------------- | ------------------------------------------ |
+| Dialog container | `create-manual-dialog`        | Main dialog container for creating flashcard|
+
+### FlashcardForm (`src/components/shared/forms/FlashcardForm.tsx`)
+
+| Element          | Test ID                       | Description                                |
+| ---------------- | ----------------------------- | ------------------------------------------ |
+| Front textarea   | `flashcard-form-front`        | Textarea for flashcard front content       |
+| Back textarea    | `flashcard-form-back`         | Textarea for flashcard back content        |
+| Cancel button    | `flashcard-form-cancel`       | Button to cancel and close dialog          |
+| Submit button    | `flashcard-form-submit`       | Button to submit form (Create/Save)        |
+
+---
+
+## Library Manual Creation Test Scenario Mapping
+
+### Step 1: Navigate to Library
+
+```typescript
+await page.getByTestId("nav-library-link").click();
+await page.waitForURL("/library");
+```
+
+### Step 2: Click "Add Manual"
+
+```typescript
+await page.getByTestId("library-add-manual-button").click();
+await page.getByTestId("create-manual-dialog").waitFor();
+```
+
+### Step 3: Fill in flashcard data
+
+```typescript
+await page.getByTestId("flashcard-form-front").fill("What is React?");
+await page.getByTestId("flashcard-form-back").fill("A JavaScript library for building user interfaces");
+```
+
+### Step 4: Submit the form
+
+```typescript
+await page.getByTestId("flashcard-form-submit").click();
+// Wait for dialog to close and flashcard to appear in list
+await page.getByTestId("create-manual-dialog").waitFor({ state: "hidden" });
+```
+
+### Step 5: Logout
+
+```typescript
+await page.getByTestId("nav-logout-button").click();
+await page.waitForURL("/login");
+```
+
+---
+
+## Complete Library Manual Creation Example
+
+```typescript
+import { test, expect } from "@playwright/test";
+
+test("create flashcard manually and logout", async ({ page }) => {
+  // Assume user is already logged in
+  await page.goto("/");
+  
+  // Step 1: Go to library
+  await page.getByTestId("nav-library-link").click();
+  await page.waitForURL("/library");
+  
+  // Step 2: Click Add Manual
+  await page.getByTestId("library-add-manual-button").click();
+  await expect(page.getByTestId("create-manual-dialog")).toBeVisible();
+  
+  // Step 3: Fill in flashcard data
+  await page.getByTestId("flashcard-form-front").fill("What is React?");
+  await page.getByTestId("flashcard-form-back").fill("A JavaScript library for building user interfaces");
+  
+  // Step 4: Submit the form
+  await page.getByTestId("flashcard-form-submit").click();
+  
+  // Wait for dialog to close
+  await expect(page.getByTestId("create-manual-dialog")).not.toBeVisible();
+  
+  // Verify flashcard appears in the list (optional)
+  await expect(page.getByText("What is React?")).toBeVisible();
+  
+  // Step 5: Logout
+  await page.getByTestId("nav-logout-button").click();
+  await page.waitForURL("/login");
+});
+```
+
+---
+
 ## Notes
 
 - All test IDs follow the pattern: `{component}-{element}-{type}`
@@ -256,3 +372,4 @@ test("complete authentication flow", async ({ page }) => {
 - Error messages have their own test IDs for assertion
 - Loading states have dedicated test IDs for waiting/assertion
 - Page containers have test IDs for page load verification
+
