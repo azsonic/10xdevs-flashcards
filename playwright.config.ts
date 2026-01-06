@@ -19,7 +19,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: "html",
+  reporter: process.env.CI ? "list" : "html",
+  timeout: 15_000, // 15s per test
+  expect: { timeout: 5_000 }, // 5s for assertions
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3001",
     trace: "on-first-retry",
@@ -44,14 +46,13 @@ export default defineConfig({
     timeout: 120 * 1000,
     env: {
       // Pass test environment variables to the dev server
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_KEY: process.env.SUPABASE_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-      OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
-      E2E_USERNAME: process.env.E2E_USERNAME,
-      E2E_PASSWORD: process.env.E2E_PASSWORD,
-      E2E_AUTH_USERNAME: process.env.E2E_AUTH_USERNAME,
-      E2E_AUTH_PASSWORD: process.env.E2E_AUTH_PASSWORD,
+      SUPABASE_URL: process.env.SUPABASE_URL ?? "",
+      SUPABASE_KEY: process.env.SUPABASE_KEY ?? "",
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+      E2E_USERNAME: process.env.E2E_USERNAME ?? "",
+      E2E_PASSWORD: process.env.E2E_PASSWORD ?? "",
+      E2E_AUTH_USERNAME: process.env.E2E_AUTH_USERNAME ?? "",
+      E2E_AUTH_PASSWORD: process.env.E2E_AUTH_PASSWORD ?? "",
     },
   },
 });
