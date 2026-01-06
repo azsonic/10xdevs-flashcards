@@ -115,7 +115,9 @@ export function FlashcardForm({
           disabled={isSubmitting}
           className={errors.front ? "border-red-500" : ""}
           rows={3}
+          maxLength={MAX_FRONT_LENGTH}
           placeholder="Enter the question or prompt..."
+          data-test-id="flashcard-form-front"
         />
         {errors.front && <p className="text-sm text-red-600">{errors.front}</p>}
       </div>
@@ -135,17 +137,19 @@ export function FlashcardForm({
           disabled={isSubmitting}
           className={errors.back ? "border-red-500" : ""}
           rows={5}
+          maxLength={MAX_BACK_LENGTH}
           placeholder="Enter the answer or explanation..."
+          data-test-id="flashcard-form-back"
         />
         {errors.back && <p className="text-sm text-red-600">{errors.back}</p>}
       </div>
 
       {/* Form Actions */}
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} data-test-id="flashcard-form-cancel">
           {cancelLabel}
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} data-test-id="flashcard-form-submit">
           {isSubmitting ? "Saving..." : submitLabel}
         </Button>
       </div>
