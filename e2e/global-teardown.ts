@@ -8,6 +8,10 @@ import type { Database } from "../src/db/database.types";
  *
  * Uses regular authentication (not Service Role Key) to avoid RLS issues.
  * Signs in as the E2E test user to clean up their data.
+ *
+ * Test Strategy:
+ * - Authentication tests: Create random users (no cleanup needed)
+ * - Other tests (library, etc.): Use fixed E2E user (cleaned up here)
  */
 async function globalTeardown() {
   console.log("\n🧹 Starting E2E test cleanup...");
@@ -26,8 +30,9 @@ async function globalTeardown() {
   }
 
   if (!e2eUsername || !e2ePassword) {
-    console.log("ℹ️  E2E_USERNAME or E2E_PASSWORD not set - skipping authenticated cleanup");
-    console.log("   Set these variables to enable automatic cleanup of test data");
+    console.log("⚠️  E2E_USERNAME or E2E_PASSWORD not set - skipping cleanup");
+    console.log("   Library and other non-auth tests will accumulate data without cleanup");
+    console.log("   Set E2E_USERNAME and E2E_PASSWORD in .env.test to enable cleanup");
     return;
   }
 
@@ -48,7 +53,13 @@ async function globalTeardown() {
 
     if (signInError) {
       console.error("❌ Failed to sign in as E2E user:", signInError.message);
-      console.error("   Check E2E_USERNAME and E2E_PASSWORD in .env.test");
+      console.error("   User:", e2eUsername);
+      console.error("");
+      console.error("   The E2E test user must exist before running tests.");
+      console.error("   Create this user in Supabase Auth:");
+      console.error("   1. Go to Supabase Dashboard → Authentication → Users");
+      console.error("   2. Create user with credentials from .env.test");
+      console.error("   3. Or update .env.test with existing user credentials");
       return;
     }
 

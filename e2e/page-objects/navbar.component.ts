@@ -16,6 +16,7 @@ export class NavbarComponent {
 
   // Authenticated state elements
   readonly userEmail: Locator;
+  readonly libraryLink: Locator;
   readonly logoutForm: Locator;
   readonly logoutButton: Locator;
 
@@ -30,6 +31,7 @@ export class NavbarComponent {
 
     // Authenticated state
     this.userEmail = page.getByTestId("nav-user-email");
+    this.libraryLink = page.getByTestId("nav-library-link");
     this.logoutForm = page.getByTestId("nav-logout-form");
     this.logoutButton = page.getByTestId("nav-logout-button");
   }
@@ -46,6 +48,13 @@ export class NavbarComponent {
    */
   async clickRegister(): Promise<void> {
     await this.registerLink.click();
+  }
+
+  /**
+   * Click on the library link
+   */
+  async clickLibrary(): Promise<void> {
+    await this.libraryLink.click();
   }
 
   /**

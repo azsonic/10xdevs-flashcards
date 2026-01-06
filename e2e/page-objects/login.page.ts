@@ -101,12 +101,23 @@ export class LoginPage extends BasePage {
   }
 
   /**
+   * Wait for the login form to be ready (React hydrated)
+   */
+  async waitForFormReady(): Promise<void> {
+    await expect(this.form).toBeVisible();
+    await expect(this.submitButton).toBeEnabled();
+  }
+
+  /**
    * Complete login flow with provided credentials
+   * Handles React hydration and form interaction
    */
   async login(email: string, password: string): Promise<void> {
-    await this.fillEmail(email);
-    await this.fillPassword(password);
-    await this.submit();
+    await this.waitForFormReady();
+    // Use scoped locators within the form to avoid navbar button conflict
+    await this.form.getByLabel("Email").fill(email);
+    await this.form.getByLabel("Password").fill(password);
+    await this.form.getByRole("button", { name: "Login" }).click();
   }
 
   /**
