@@ -3,7 +3,10 @@ import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
+// Only load .env.test if not in CI (GitHub Actions provides env vars directly)
+if (!process.env.CI) {
+  dotenv.config({ path: path.resolve(process.cwd(), ".env.test") });
+}
 
 /**
  * Playwright configuration for E2E testing
