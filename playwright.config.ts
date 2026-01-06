@@ -46,7 +46,12 @@ export default defineConfig({
       // Pass test environment variables to the dev server
       SUPABASE_URL: process.env.SUPABASE_URL || "",
       SUPABASE_KEY: process.env.SUPABASE_KEY || "",
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
       OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
+      E2E_USERNAME: process.env.E2E_USERNAME || "",
+      E2E_PASSWORD: process.env.E2E_PASSWORD || "",
+      E2E_AUTH_USERNAME: process.env.E2E_AUTH_USERNAME || "",
+      E2E_AUTH_PASSWORD: process.env.E2E_AUTH_PASSWORD || "",
     },
   },
 });
