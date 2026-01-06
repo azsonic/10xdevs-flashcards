@@ -11,15 +11,19 @@ The Page Object Model (POM) is a design pattern that creates an object repositor
 ```
 e2e/
 ├── page-objects/
-│   ├── index.ts              # Central export point
-│   ├── base.page.ts          # Base page class with common functionality
-│   ├── navbar.component.ts   # Navbar component (used across all pages)
-│   ├── login.page.ts         # Login page (/login)
-│   ├── register.page.ts      # Register page (/register)
-│   └── dashboard.page.ts     # Dashboard page (/)
+│   ├── index.ts                          # Central export point
+│   ├── base.page.ts                      # Base page class with common functionality
+│   ├── navbar.component.ts               # Navbar component (used across all pages)
+│   ├── login.page.ts                     # Login page (/login)
+│   ├── register.page.ts                  # Register page (/register)
+│   ├── dashboard.page.ts                 # Dashboard page (/)
+│   ├── generate.page.ts                  # Generate page (/generate)
+│   ├── library.page.ts                   # Library page (/library)
+│   └── create-manual-dialog.component.ts # Create manual dialog component
 ├── utils/
-│   └── test-helpers.ts       # Utility functions for tests
-└── auth.spec.ts              # Authentication flow tests using POM
+│   └── test-helpers.ts                   # Utility functions for tests
+├── auth.spec.ts                          # Authentication flow tests
+└── library.spec.ts                       # Library flow tests
 ```
 
 ## Page Objects
@@ -56,12 +60,13 @@ Represents the navigation bar component present on all pages.
 **Elements:**
 
 - Guest state: `loginLink`, `loginButton`, `registerLink`, `registerButton`
-- Authenticated state: `userEmail`, `logoutForm`, `logoutButton`
+- Authenticated state: `userEmail`, `libraryLink`, `logoutForm`, `logoutButton`
 
 **Key Methods:**
 
 - `clickLogin()` - Navigate to login page
 - `clickRegister()` - Navigate to register page
+- `clickLibrary()` - Navigate to library page
 - `clickLogout()` - Logout user
 - `verifyUserLoggedIn(email: string)` - Verify user is authenticated
 - `verifyUserLoggedOut()` - Verify user is not authenticated
@@ -168,6 +173,76 @@ Represents the main dashboard/home page at `/`.
 const dashboardPage = new DashboardPage(page);
 await dashboardPage.waitForDashboard();
 await dashboardPage.verifyPageLoaded();
+```
+
+---
+
+### LibraryPage (`library.page.ts`)
+
+Represents the flashcard library page at `/library`.
+
+**Elements:**
+
+- Main elements: `pageContainer`, `pageTitle`, `pageDescription`
+- Actions: `addManualButton`, `searchInput`
+
+**Key Methods:**
+
+- `navigate()` - Go to library page
+- `verifyPageLoaded()` - Verify page is loaded
+- `waitForLibrary()` - Wait for library after navigation
+- `clickAddManual()` - Open create manual dialog
+- `search(query: string)` - Search for flashcards
+- `verifyAddManualEnabled()` - Verify add button is enabled
+- `verifyAddManualDisabled()` - Verify add button is disabled
+- `verifyFlashcardExists(frontText: string)` - Verify flashcard exists in list
+
+**Usage:**
+
+```typescript
+const libraryPage = new LibraryPage(page);
+await libraryPage.navigate();
+await libraryPage.clickAddManual();
+await libraryPage.verifyFlashcardExists("What is React?");
+```
+
+---
+
+### CreateManualDialogComponent (`create-manual-dialog.component.ts`)
+
+Represents the create manual flashcard dialog component.
+
+**Elements:**
+
+- Dialog elements: `dialog`, `dialogTitle`, `dialogDescription`
+- Form inputs: `frontInput`, `backInput`
+- Actions: `cancelButton`, `submitButton`
+
+**Key Methods:**
+
+- `verifyDialogVisible()` - Verify dialog is shown
+- `verifyDialogHidden()` - Verify dialog is hidden
+- `waitForDialog()` - Wait for dialog to appear
+- `waitForDialogClose()` - Wait for dialog to close
+- `fillFront(text: string)` - Fill front field
+- `fillBack(text: string)` - Fill back field
+- `submit()` - Submit the form
+- `cancel()` - Cancel and close dialog
+- `createFlashcard(front: string, back: string)` - Complete creation flow
+- `verifySubmitEnabled()` - Verify submit button is enabled
+- `verifySubmitDisabled()` - Verify submit button is disabled
+- `verifySubmitSaving()` - Verify saving state
+- `getFrontValue()` - Get front input value
+- `getBackValue()` - Get back input value
+
+**Usage:**
+
+```typescript
+const createDialog = new CreateManualDialogComponent(page);
+await libraryPage.clickAddManual();
+await createDialog.waitForDialog();
+await createDialog.createFlashcard("Question", "Answer");
+await createDialog.waitForDialogClose();
 ```
 
 ---
@@ -286,6 +361,39 @@ async registerAndVerify(email: string, password: string) {
   await dashboard.verifyPageLoaded();
   // Too much logic in page object
 }
+```
+
+### Complete Library Manual Creation Flow
+
+```typescript
+import { test } from "@playwright/test";
+import { LibraryPage, CreateManualDialogComponent, NavbarComponent } from "./page-objects";
+
+test("should create manual flashcard and logout", async ({ page }) => {
+  const libraryPage = new LibraryPage(page);
+  const createDialog = new CreateManualDialogComponent(page);
+  const navbar = new NavbarComponent(page);
+
+  // Navigate to library
+  await page.goto("/");
+  await navbar.clickLibrary();
+  await libraryPage.waitForLibrary();
+
+  // Open create dialog
+  await libraryPage.clickAddManual();
+  await createDialog.waitForDialog();
+
+  // Create flashcard
+  await createDialog.createFlashcard("What is React?", "A JavaScript library for building user interfaces");
+
+  // Verify success
+  await createDialog.waitForDialogClose();
+  await libraryPage.verifyFlashcardExists("What is React?");
+
+  // Logout
+  await navbar.clickLogout();
+  await page.waitForURL("/login");
+});
 ```
 
 ### 4. Use Descriptive Method Names
