@@ -146,7 +146,13 @@ export function FlashcardForm({
 
       {/* Form Actions */}
       <div className="flex justify-end gap-2 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} data-test-id="flashcard-form-cancel">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          data-test-id="flashcard-form-cancel"
+        >
           {cancelLabel}
         </Button>
         <Button type="submit" disabled={isSubmitting} data-test-id="flashcard-form-submit">
