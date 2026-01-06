@@ -34,3 +34,17 @@ playwright-report/
 Steps/
 backlog.md
 links.md
+
+# E2E - Temporary review documentation (not needed in repo)
+e2e/docs/TEST-ARTIFACTS-REVIEW.md
+e2e/docs/IMPLEMENTATION-SUMMARY.md
+e2e/docs/STRUCTURE-GUIDE.md
+e2e/docs/STRUCTURE-SUMMARY.md
+e2e/docs/FIXES-APPLIED.md
+e2e/docs/FINAL-SUMMARY.md
+e2e/docs/INDEX.md
+e2e/docs/history/
+e2e/organize-structure.ps1
+e2e/organize-structure.sh
+e2e/COMMIT-GUIDE.md
+e2e/READY-TO-COMMIT.md
