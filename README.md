@@ -1,6 +1,7 @@
 # 10xdevs-flashcards
 
-[![Project Status: Initial Development](https://img.shields.io/badge/status-initial_development-blue.svg)](https://github.com/10xdevs/10xdevs-flashcards)
+[![Project Status: MVP Complete](https://img.shields.io/badge/status-MVP_complete-green.svg)](https://github.com/10xdevs/10xdevs-flashcards)
+[![Node Version](https://img.shields.io/badge/node-22.14.0-brightgreen.svg)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A web-based learning tool designed for "casual learners" to streamline the creation of educational flashcards by leveraging AI.
@@ -17,84 +18,155 @@ A web-based learning tool designed for "casual learners" to streamline the creat
 
 ## Project Description
 
-The **10xdevs-flashcards** application is a web-based learning tool designed for "casual learners." It aims to streamline the creation of educational flashcards by leveraging AI. The core feature allows users to paste a block of text and automatically generate flashcard candidates, which they can then review, edit, and save. The application also supports manual flashcard creation and management. Saved flashcards can be studied using an integrated spaced repetition system to enhance learning efficiency.
+The **10xdevs-flashcards** application is a web-based learning tool designed for "casual learners." It aims to streamline the creation of educational flashcards by leveraging AI. The core feature allows users to paste a block of text (up to 5000 characters) and automatically generate flashcard candidates using AI, which they can then review, edit, and save. The application also supports manual flashcard creation and management.
 
 ## Tech Stack
 
-The project is built with the following technologies:
+The project is built with modern web technologies and follows best practices for type safety, testing, and code quality:
 
-- **Frontend:**
-  - [Astro 5](https://astro.build/)
-  - [React 19](https://react.dev/)
-  - [TypeScript 5](https://www.typescriptlang.org/)
-  - [Tailwind CSS 4](https://tailwindcss.com/)
-  - [Shadcn/ui](https://ui.shadcn.com/)
-- **Backend and Database:**
-  - [Supabase](https://supabase.io/)
-- **AI Integration:**
-  - [Openrouter.ai](https://openrouter.ai/)
-- **Testing:**
-  - [Vitest](https://vitest.dev/) - Unit testing framework
-  - [React Testing Library](https://testing-library.com/react) - React component testing
-  - [Playwright](https://playwright.dev/) - End-to-end testing
-- **CI/CD and Hosting:**
-  - [GitHub Actions](https://github.com/features/actions)
-  - [DigitalOcean](https://www.digitalocean.com/)
+### Frontend
+- **[Astro](https://astro.build/)** (v5.13.7) - Modern web framework for content-focused websites
+- **[React](https://react.dev/)** (v19.1.1) - UI component library
+- **[TypeScript](https://www.typescriptlang.org/)** (v5) - Type-safe JavaScript
+- **[Tailwind CSS](https://tailwindcss.com/)** (v4.1.13) - Utility-first CSS framework
+- **[Shadcn/ui](https://ui.shadcn.com/)** - Re-usable components built with Radix UI
+
+### State Management & Forms
+- **[Zustand](https://zustand-demo.pmnd.rs/)** (v5.0.9) - Lightweight state management
+- **[React Hook Form](https://react-hook-form.com/)** (v7.69.0) - Performant form handling
+- **[Zod](https://zod.dev/)** (v3.25.76) - TypeScript-first schema validation
+
+### Backend and Database
+- **[Supabase](https://supabase.io/)** - Backend-as-a-Service for authentication and database
+  - PostgreSQL database
+  - Row-level security
+  - Real-time subscriptions
+
+### AI Integration
+- **[OpenRouter.ai](https://openrouter.ai/)** - AI model routing service for flashcard generation
+
+### Testing
+- **[Vitest](https://vitest.dev/)** (v4.0.16) - Unit and integration testing framework
+- **[React Testing Library](https://testing-library.com/react)** (v16.3.1) - React component testing
+- **[Playwright](https://playwright.dev/)** (v1.57.0) - End-to-end testing
+- **[@vitest/coverage-v8](https://vitest.dev/guide/coverage.html)** - Code coverage reporting
+
+### Development Tools
+- **[ESLint](https://eslint.org/)** - Linting with TypeScript, React, and Astro rules
+- **[Prettier](https://prettier.io/)** - Code formatting
+- **[Husky](https://typicode.github.io/husky/)** - Git hooks for pre-commit checks
+- **[lint-staged](https://github.com/okonet/lint-staged)** - Run linters on staged files
+
+### Hosting & CI/CD
+- **[GitHub Actions](https://github.com/features/actions)** - Continuous integration
+- **[DigitalOcean](https://www.digitalocean.com/)** - Production hosting
 
 ## Getting Started Locally
 
 To get the project running on your local machine, follow these steps:
 
-1.  **Clone the repository:**
+### Prerequisites
 
-    ```sh
-    git clone https://github.com/10xdevs/10xdevs-flashcards.git
-    cd 10xdevs-flashcards
-    ```
+- **Node.js** v22.14.0 (specified in `.nvmrc`)
+- **npm** (comes with Node.js)
+- **Supabase account** for database and authentication
+- **OpenRouter.ai API key** for AI flashcard generation
 
-2.  **Set up the Node.js version:**
-    This project uses a specific version of Node.js. If you have `nvm` (Node Version Manager) installed, you can use the following command to switch to the correct version:
+### Installation
 
-    ```sh
-    nvm use
-    ```
+1. **Clone the repository:**
 
-    If you don't have `nvm`, please install Node.js version `22.14.0`.
+   ```sh
+   git clone https://github.com/10xdevs/10xdevs-flashcards.git
+   cd 10xdevs-flashcards
+   ```
 
-3.  **Install dependencies:**
+2. **Set up the Node.js version:**
 
-    ```sh
-    npm install
-    ```
+   This project uses a specific version of Node.js. If you have `nvm` (Node Version Manager) installed, you can use:
 
-4.  **Run the development server:**
-    ```sh
-    npm run dev
-    ```
-    The application will be available at `http://localhost:4321`.
+   ```sh
+   nvm use
+   ```
+
+   If you don't have `nvm`, please install Node.js version **22.14.0** from [nodejs.org](https://nodejs.org/).
+
+3. **Install dependencies:**
+
+   ```sh
+   npm install
+   ```
+
+4. **Set up environment variables:**
+
+   Create a `.env` file in the project root with the following variables:
+
+   ```env
+   # Supabase
+   PUBLIC_SUPABASE_URL=your_supabase_url
+   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+   # OpenRouter
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   ```
+
+   > **Note:** Contact the project maintainers or refer to the project's internal documentation for the actual values.
+
+5. **Run the development server:**
+
+   ```sh
+   npm run dev
+   ```
+
+   The application will be available at `http://localhost:3000`.
 
 ## Available Scripts
 
 In the project directory, you can run the following commands:
 
-- `npm run dev`: Runs the app in development mode.
-- `npm run build`: Builds the app for production.
-- `npm run preview`: Runs a local preview of the production build.
-- `npm run lint`: Lints the project files.
-- `npm run lint:fix`: Lints and automatically fixes problems.
-- `npm run format`: Formats the code using Prettier.
+### Development
 
-### Testing
+- **`npm run dev`** - Runs the app in development mode at `http://localhost:3000`
+- **`npm run dev:e2e`** - Runs the app in test mode for E2E testing
+- **`npm run build`** - Builds the app for production to the `dist/` folder
+- **`npm run preview`** - Runs a local preview of the production build
 
-- `npm test`: Run unit and integration tests (Vitest).
-- `npm run test:watch`: Run tests in watch mode.
-- `npm run test:coverage`: Run tests with coverage report.
-- `npm run test:e2e`: Run end-to-end tests (Playwright).
-- `npm run test:e2e:ui`: Run E2E tests in interactive UI mode.
+### Code Quality
 
-For detailed testing guides:
+- **`npm run lint`** - Lints the project files (TypeScript, React, Astro)
+- **`npm run lint:fix`** - Lints and automatically fixes problems where possible
+- **`npm run format`** - Formats all code using Prettier
+
+### Testing - Unit & Integration
+
+- **`npm test`** - Run all unit and integration tests once
+- **`npm run test:unit`** - Run only unit tests
+- **`npm run test:integration`** - Run only integration tests
+- **`npm run test:watch`** - Run tests in watch mode (re-runs on file changes)
+- **`npm run test:watch:unit`** - Run unit tests in watch mode
+- **`npm run test:watch:integration`** - Run integration tests in watch mode
+- **`npm run test:ui`** - Open Vitest UI for interactive test exploration
+- **`npm run test:coverage`** - Run tests with coverage report
+- **`npm run test:coverage:unit`** - Run unit tests with coverage report
+- **`npm run test:coverage:integration`** - Run integration tests with coverage report
+
+### Testing - End-to-End (E2E)
+
+- **`npm run test:e2e`** - Run Playwright E2E tests in headless mode
+- **`npm run test:e2e:ui`** - Run E2E tests in interactive UI mode
+- **`npm run test:e2e:debug`** - Run E2E tests in debug mode with step-by-step execution
+- **`npm run test:e2e:codegen`** - Generate E2E test code using Playwright's codegen tool
+
+### Testing - All
+
+- **`npm run test:all`** - Run all tests (unit, integration, and E2E)
+
+### Testing Documentation
+
+For detailed testing guides and best practices:
+
 - **Unit & Integration Tests:** [src/test/README.md](src/test/README.md)
-- **E2E Tests - Writing:** [e2e/README.md](e2e/README.md)
+- **E2E Tests - Writing Tests:** [e2e/README.md](e2e/README.md)
 - **E2E Tests - Setup & Running:** [PLAYWRIGHT-GUIDE.md](PLAYWRIGHT-GUIDE.md)
 - **Test IDs Reference:** [TEST-IDS.md](TEST-IDS.md)
 
@@ -102,27 +174,42 @@ For detailed testing guides:
 
 ### In Scope for MVP
 
-- AI-generated flashcards from user-pasted text (up to 5000 characters).
-- Full manual flashcard creation and editing capabilities.
-- Browsing, editing, and deleting saved flashcards.
-- A simple email and password user account system for storing flashcards.
-- Integration with a pre-existing open-source spaced-repetition algorithm.
-- A single, searchable list for all user flashcards.
-- Web-only application.
+- ✅ AI-generated flashcards from user-pasted text (up to 5000 characters)
+- ✅ Full manual flashcard creation and editing capabilities
+- ✅ Browsing, editing, and deleting saved flashcards
+- ✅ Simple email and password user account system for storing flashcards
+- ✅ Single, searchable list for all user flashcards
+- ✅ Web-only application
 
 ### Out of Scope for MVP
 
-- Developing a custom, advanced spaced-repetition algorithm.
-- Importing content from various file formats (PDF, DOCX, etc.).
-- Sharing flashcard sets or collaborating between users.
-- Integrations with other educational platforms (LMS, etc.).
-- Native mobile applications (iOS, Android).
-- Organizing flashcards into decks or folders.
+- ❌ Integration with a pre-existing open-source spaced-repetition algorithm
+- ❌ Developing a custom, advanced spaced-repetition algorithm
+- ❌ Importing content from various file formats (PDF, DOCX, etc.)
+- ❌ Sharing flashcard sets or collaborating between users
+- ❌ Integrations with other educational platforms (LMS, etc.)
+- ❌ Native mobile applications (iOS, Android)
+- ❌ Organizing flashcards into decks or folders
 
 ## Project Status
 
-The project is currently in the **initial development phase**. The core features are being built, and the application is not yet ready for production use.
+The project has **completed its MVP (Minimum Viable Product)** phase. All core features have been implemented and tested:
+
+- ✅ User authentication (registration, login, password reset)
+- ✅ AI-powered flashcard generation
+- ✅ Manual flashcard creation and management
+- ✅ Flashcard library with search and filtering
+- ✅ Comprehensive test coverage (unit, integration, E2E)
+- ✅ CI/CD pipeline with GitHub Actions
+
+The application is ready for production deployment and use.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE.md](LICENSE.md) file for details.
+
+Copyright (c) 2024 10xdevs
+
+---
+
+**Need help?** Check out the [testing documentation](src/test/README.md) or open an issue on GitHub.
