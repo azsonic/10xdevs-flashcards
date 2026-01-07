@@ -17,7 +17,7 @@ A web-based learning tool designed for "casual learners" to streamline the creat
 
 ## Project Description
 
-The **10xdevs-flashcards** application is a web-based learning tool designed for "casual learners." It aims to streamline the creation of educational flashcards by leveraging AI. The core feature allows users to paste a block of text and automatically generate flashcard candidates, which they can then review, edit, and save. The application also supports manual flashcard creation and management. Saved flashcards can be studied using an integrated spaced repetition system to enhance learning efficiency.
+The **10xdevs-flashcards** application is a web-based learning tool designed for "casual learners." It aims to streamline the creation of educational flashcards by leveraging AI. The core feature allows users to paste a block of text and automatically generate flashcard candidates, which they can then review, edit, and save. The application also supports manual flashcard creation and management. Saved flashcards can be studied using an integrated spaced repetition system to enhance learning efficiency
 
 ## Tech Stack
 
