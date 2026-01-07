@@ -1,5 +1,8 @@
 # Running Playwright E2E Tests
 
+> **For writing tests and test patterns, see [e2e/README.md](e2e/README.md)**  
+> This guide focuses on setup, running, and troubleshooting E2E tests.
+
 ## Port Configuration
 
 - **Dev Server**: `http://localhost:3000` (uses `.env`)

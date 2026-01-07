@@ -84,6 +84,20 @@ In the project directory, you can run the following commands:
 - `npm run lint:fix`: Lints and automatically fixes problems.
 - `npm run format`: Formats the code using Prettier.
 
+### Testing
+
+- `npm test`: Run unit and integration tests (Vitest).
+- `npm run test:watch`: Run tests in watch mode.
+- `npm run test:coverage`: Run tests with coverage report.
+- `npm run test:e2e`: Run end-to-end tests (Playwright).
+- `npm run test:e2e:ui`: Run E2E tests in interactive UI mode.
+
+For detailed testing guides:
+- **Unit & Integration Tests:** [src/test/README.md](src/test/README.md)
+- **E2E Tests - Writing:** [e2e/README.md](e2e/README.md)
+- **E2E Tests - Setup & Running:** [PLAYWRIGHT-GUIDE.md](PLAYWRIGHT-GUIDE.md)
+- **Test IDs Reference:** [TEST-IDS.md](TEST-IDS.md)
+
 ## Project Scope
 
 ### In Scope for MVP

@@ -1,6 +1,10 @@
 # Test IDs Reference
 
-This document lists all `data-test-id` attributes used in the authentication flow for Playwright E2E tests.
+> **Note:** This document provides a reference for all `data-testid` attributes used in E2E tests.  
+> For comprehensive E2E testing guides, see [e2e/README.md](e2e/README.md).  
+> For Page Object Model patterns, see [e2e/docs/QUICK-REFERENCE.md](e2e/docs/QUICK-REFERENCE.md).
+
+This document lists all `data-testid` attributes used in the application for Playwright E2E tests.
 
 ## Authentication Flow Test Scenario
 

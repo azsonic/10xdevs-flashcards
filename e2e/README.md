@@ -1,5 +1,8 @@
 # E2E Tests
 
+> **For setup, troubleshooting, and running tests, see [PLAYWRIGHT-GUIDE.md](../PLAYWRIGHT-GUIDE.md)**  
+> This guide focuses on test architecture, patterns, and writing tests.
+
 End-to-end tests for the 10xDevs Flashcards application using Playwright.
 
 ## 📚 Documentation
