@@ -1,6 +1,4 @@
 # Cloudflare Pages Configuration
-# This file is optional but provides better control over deployment settings
-
 name = "10xdevs-flashcards"
 compatibility_date = "2025-01-07"
 

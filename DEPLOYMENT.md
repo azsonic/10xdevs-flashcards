@@ -46,10 +46,11 @@ Add the following secrets to your GitHub repository:
 |-------------|-------------|---------------|
 | `CLOUDFLARE_API_TOKEN` | API token for deployment | Created in step 2 above |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID | Dashboard URL or Account Settings |
-| `CLOUDFLARE_PROJECT_NAME` | Name of your Pages project | The name you chose in step 1 |
 | `SUPABASE_URL` | Your Supabase project URL | Supabase Project Settings → API |
 | `SUPABASE_KEY` | Supabase anonymous key | Supabase Project Settings → API |
 | `OPENROUTER_API_KEY` | OpenRouter API key | [OpenRouter Dashboard](https://openrouter.ai/keys) |
+
+> **Note:** The project name is configured in `wrangler.toml` and does not need to be a secret.
 
 ### 4. Configure Environment Variables in Cloudflare
 
@@ -106,8 +107,10 @@ To deploy manually using Wrangler CLI:
 
 4. Deploy to Cloudflare Pages:
    ```bash
-   wrangler pages deploy dist --project-name=your-project-name
+   wrangler pages deploy dist
    ```
+   
+   The project name will be read from `wrangler.toml`.
 
 ## Monitoring Deployments
 

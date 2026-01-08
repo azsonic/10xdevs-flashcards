@@ -220,10 +220,11 @@ For the CI/CD pipeline to work, the following GitHub secrets must be configured:
 
 - `CLOUDFLARE_API_TOKEN` - API token for Cloudflare deployment
 - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
-- `CLOUDFLARE_PROJECT_NAME` - Name of your Cloudflare Pages project
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_KEY` - Supabase anonymous key
 - `OPENROUTER_API_KEY` - OpenRouter API key for AI generation
+
+> **Note:** The Cloudflare project name (`10xdevs-flashcards`) is configured in `wrangler.toml`.
 
 ## License
 
