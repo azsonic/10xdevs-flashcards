@@ -68,19 +68,24 @@ Environment variables need to be set in Cloudflare Pages for runtime access:
 
 4. Click **Save**
 
-### 5. Configure Compatibility Flags (Important for React 19)
+### 5. Configure Compatibility Flags (Critical - Do This First!)
+
+**⚠️ IMPORTANT:** You must configure this BEFORE your first deployment or it will fail!
 
 To ensure React 19 works correctly with Cloudflare Workers:
 
-1. Go to your Cloudflare Pages project
+1. Go to your Cloudflare Pages project in the dashboard
 2. Navigate to **Settings** → **Functions**
-3. Scroll to **Compatibility flags**
-4. Add `nodejs_compat` to the list
-5. Click **Save**
+3. Scroll down to **Compatibility flags**
+4. In the "Compatibility flag" input, type `nodejs_compat`
+5. Click **Add flag** or press Enter
+6. Click **Save changes**
 
-> **Note:** This flag enables Node.js compatibility APIs like `MessageChannel` which are required by React 19.
+> **Note:** This flag enables Node.js compatibility APIs like `MessageChannel` which are required by React 19. Without this flag, deployments will fail with "MessageChannel is not defined" error.
 
 ## Deployment Process
+
+**⚠️ Prerequisites:** Before your first deployment, ensure you have completed steps 1-5 above, especially configuring the `nodejs_compat` compatibility flag in Cloudflare dashboard!
 
 ### Automatic Deployment
 
@@ -119,10 +124,10 @@ To deploy manually using Wrangler CLI:
 
 4. Deploy to Cloudflare Pages:
    ```bash
-   wrangler pages deploy dist --compatibility-flags="nodejs_compat"
+   wrangler pages deploy dist
    ```
    
-   The project name will be read from `wrangler.toml`. The `nodejs_compat` flag is required for React 19 compatibility.
+   The project name will be read from `wrangler.toml`.
 
 ## Monitoring Deployments
 

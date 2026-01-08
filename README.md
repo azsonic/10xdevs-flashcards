@@ -226,13 +226,18 @@ For the CI/CD pipeline to work, the following GitHub secrets must be configured:
 
 > **Note:** The Cloudflare project name (`10xdevs-flashcards`) is configured in `wrangler.toml`.
 
-### Cloudflare Configuration
+### Cloudflare Configuration (Required Before First Deploy!)
 
-In your Cloudflare Pages project settings:
-1. Add environment variables (Settings → Environment variables)
-2. Enable `nodejs_compat` compatibility flag (Settings → Functions → Compatibility flags)
+**⚠️ Important:** Configure these settings in Cloudflare dashboard BEFORE pushing to master:
 
-The `nodejs_compat` flag is required for React 19 compatibility.
+1. **Environment Variables** (Settings → Environment variables):
+   - Add `SUPABASE_URL`, `SUPABASE_KEY`, `OPENROUTER_API_KEY`
+
+2. **Compatibility Flag** (Settings → Functions → Compatibility flags):
+   - Add `nodejs_compat` flag
+   - This is **required** for React 19 - deployment will fail without it!
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed setup instructions.
 
 ## License
 
