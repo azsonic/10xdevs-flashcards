@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { generateFlashcards, GenerationError } from "../../../lib/generation.service";
+import { generateFlashcards, GenerationError, setRuntimeApiKey } from "../../../lib/generation.service";
 import type { GenerateFlashcardsCommand } from "../../../types";
 
 export const prerender = false;
@@ -54,6 +54,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   try {
+    // Set runtime API key from Cloudflare environment
+    const runtimeEnv = locals.runtime?.env;
+    if (runtimeEnv?.OPENROUTER_API_KEY) {
+      setRuntimeApiKey(runtimeEnv.OPENROUTER_API_KEY);
+    }
+
     const result = await generateFlashcards({
       source_text: validation.data.source_text,
       user_id: user.id,

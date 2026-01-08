@@ -3,17 +3,14 @@ import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 import { createClient, type SupabaseClient as SupabaseClientGeneric } from "@supabase/supabase-js";
 import type { Database } from "./database.types.ts";
 
-const supabaseUrl =
-  import.meta.env.SUPABASE_URL || (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
-const supabaseAnonKey =
-  import.meta.env.SUPABASE_KEY || (typeof process !== "undefined" ? process.env.SUPABASE_KEY : undefined);
+// Client-side environment variables (defined at build time via Vite)
+const clientSupabaseUrl = import.meta.env.SUPABASE_URL;
+const clientSupabaseKey = import.meta.env.SUPABASE_KEY;
 
-// Client-side client (for non-SSR contexts or client-side only logic)
-// We provide a fallback to prevent module loading errors if env vars are missing,
-// but the client will fail if used.
+// Client-side client (for browser/client-side only logic)
 export const supabaseClient = createClient<Database>(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder"
+  clientSupabaseUrl || "https://placeholder.supabase.co",
+  clientSupabaseKey || "placeholder"
 );
 export type SupabaseClient = SupabaseClientGeneric<Database>;
 
@@ -35,22 +32,34 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
   });
 }
 
-export const createSupabaseServerInstance = (context: { headers: Headers; cookies: AstroCookies }) => {
-  const supabase = createServerClient<Database>(
-    supabaseUrl || "https://placeholder.supabase.co",
-    supabaseAnonKey || "placeholder",
-    {
-      cookieOptions,
-      cookies: {
-        getAll() {
-          return parseCookieHeader(context.headers.get("Cookie") ?? "");
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
-        },
+interface RuntimeEnv {
+  SUPABASE_URL?: string;
+  SUPABASE_KEY?: string;
+}
+
+interface ServerContext {
+  headers: Headers;
+  cookies: AstroCookies;
+  runtime?: { env: RuntimeEnv };
+}
+
+export const createSupabaseServerInstance = (context: ServerContext) => {
+  // Get env vars from Cloudflare runtime (production) or fallback to import.meta.env (dev)
+  const runtimeEnv = context.runtime?.env;
+  const url = runtimeEnv?.SUPABASE_URL || clientSupabaseUrl || "https://placeholder.supabase.co";
+  const key = runtimeEnv?.SUPABASE_KEY || clientSupabaseKey || "placeholder";
+
+  const supabase = createServerClient<Database>(url, key, {
+    cookieOptions,
+    cookies: {
+      getAll() {
+        return parseCookieHeader(context.headers.get("Cookie") ?? "");
       },
-    }
-  );
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
+      },
+    },
+  });
 
   return supabase;
 };

@@ -13,10 +13,11 @@ const PUBLIC_PATHS = [
 ];
 
 export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
-  // 1. Create Supabase Server Client
+  // 1. Create Supabase Server Client (with Cloudflare runtime env)
   const supabase = createSupabaseServerInstance({
     cookies,
     headers: request.headers,
+    runtime: locals.runtime,
   });
 
   // 2. Attach to locals

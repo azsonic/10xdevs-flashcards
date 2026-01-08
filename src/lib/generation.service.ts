@@ -3,9 +3,13 @@ import { OpenRouterError, OpenRouterService } from "./openrouter.service";
 import type { SupabaseClient } from "../db/supabase.client";
 import type { FlashcardCandidateDto, GenerateFlashcardsResultDto } from "../types";
 
-const OPENROUTER_API_KEY = import.meta.env.OPENROUTER_API_KEY;
+// Fallback to build-time env var for local development
+const BUILD_TIME_OPENROUTER_KEY = import.meta.env.OPENROUTER_API_KEY;
 const DEFAULT_MODEL = "mistralai/devstral-2512:free";
 const GENERATION_TIMEOUT_MS = 30000; // 30 seconds
+
+// Runtime API key (set when called from API route with Cloudflare runtime)
+let runtimeApiKey: string | undefined;
 
 interface FlashcardResponse {
   flashcard_candidates: FlashcardCandidateDto[];
@@ -35,11 +39,17 @@ const FLASHCARD_RESPONSE_SCHEMA = {
 let openRouterService: OpenRouterService | null = null;
 let flashcardResponseFormat: ReturnType<OpenRouterService["buildResponseFormat"]> | null = null;
 
+// Set the runtime API key from Cloudflare runtime environment
+export function setRuntimeApiKey(key: string | undefined) {
+  runtimeApiKey = key;
+}
+
 function ensureApiKey() {
-  if (!OPENROUTER_API_KEY?.trim()) {
+  const apiKey = runtimeApiKey || BUILD_TIME_OPENROUTER_KEY;
+  if (!apiKey?.trim()) {
     throw new GenerationError("AI_SERVICE_ERROR", "Missing OpenRouter API key.");
   }
-  return OPENROUTER_API_KEY.trim();
+  return apiKey.trim();
 }
 
 function getOpenRouterService() {
