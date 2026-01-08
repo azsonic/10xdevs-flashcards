@@ -21,10 +21,10 @@ export default defineConfig({
       "import.meta.env.SUPABASE_URL": JSON.stringify(env.SUPABASE_URL),
       "import.meta.env.SUPABASE_KEY": JSON.stringify(env.SUPABASE_KEY),
     },
-    ssr: {
-      // Use workerd-compatible module resolution for SSR
-      resolve: {
-        conditions: ["workerd", "worker", "browser"],
+    resolve: {
+      alias: {
+        // Use edge-compatible React DOM server for Cloudflare Workers
+        "react-dom/server": "react-dom/server.edge",
       },
     },
   },
