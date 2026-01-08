@@ -7,6 +7,8 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
 
+const isProduction = env.NODE_ENV === "production" || !!env.CF_PAGES;
+
 // https://astro.build/config
 export default defineConfig({
   output: "server",
@@ -22,10 +24,12 @@ export default defineConfig({
       "import.meta.env.SUPABASE_KEY": JSON.stringify(env.SUPABASE_KEY),
     },
     resolve: {
-      alias: {
-        // Use edge-compatible React DOM server for Cloudflare Workers
-        "react-dom/server": "react-dom/server.edge",
-      },
+      alias: isProduction
+        ? {
+            // Use edge-compatible React DOM server for Cloudflare Workers (production only)
+            "react-dom/server": "react-dom/server.edge",
+          }
+        : {},
     },
   },
   adapter: cloudflare({
