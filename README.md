@@ -58,8 +58,8 @@ The project is built with modern web technologies and follows best practices for
 - **[lint-staged](https://github.com/okonet/lint-staged)** - Run linters on staged files
 
 ### Hosting & CI/CD
-- **[GitHub Actions](https://github.com/features/actions)** - Continuous integration
-- **[DigitalOcean](https://www.digitalocean.com/)** - Production hosting
+- **[GitHub Actions](https://github.com/features/actions)** - Continuous integration and deployment
+- **[Cloudflare Pages](https://pages.cloudflare.com/)** - Production hosting with global CDN
 
 ## Getting Started Locally
 
@@ -103,8 +103,8 @@ To get the project running on your local machine, follow these steps:
 
    ```env
    # Supabase
-   PUBLIC_SUPABASE_URL=your_supabase_url
-   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_KEY=your_supabase_anon_key
 
    # OpenRouter
    OPENROUTER_API_KEY=your_openrouter_api_key
@@ -195,14 +195,35 @@ For detailed testing guides and best practices:
 
 The project has **completed its MVP (Minimum Viable Product)** phase. All core features have been implemented and tested:
 
-- ✅ User authentication (registration, login, password reset)
+- ✅ User authentication (registration, login, logout)
 - ✅ AI-powered flashcard generation
 - ✅ Manual flashcard creation and management
 - ✅ Flashcard library with search and filtering
 - ✅ Comprehensive test coverage (unit, integration, E2E)
 - ✅ CI/CD pipeline with GitHub Actions
+- ✅ Production deployment on Cloudflare Pages
 
-The application is ready for production deployment and use.
+The application is ready for production use.
+
+## Deployment
+
+The application is automatically deployed to Cloudflare Pages when changes are pushed to the `master` branch. The deployment pipeline includes:
+
+1. **Code Linting** - Ensures code quality standards
+2. **Unit Tests** - Validates individual components and functions
+3. **Build** - Creates optimized production bundle
+4. **Deploy** - Publishes to Cloudflare Pages global CDN
+
+### Required Secrets
+
+For the CI/CD pipeline to work, the following GitHub secrets must be configured:
+
+- `CLOUDFLARE_API_TOKEN` - API token for Cloudflare deployment
+- `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
+- `CLOUDFLARE_PROJECT_NAME` - Name of your Cloudflare Pages project
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_KEY` - Supabase anonymous key
+- `OPENROUTER_API_KEY` - OpenRouter API key for AI generation
 
 ## License
 
