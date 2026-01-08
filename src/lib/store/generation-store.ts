@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * Represents the frontend view model for a candidate card.
@@ -53,7 +52,7 @@ export const useGenerationStore = create<GenerationStoreState>((set) => ({
 
   setGenerationResult: (id, candidates) => {
     const viewItems: FlashcardCandidateViewItem[] = candidates.map((c) => ({
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       front: c.front,
       back: c.back,
       originalFront: c.front,
