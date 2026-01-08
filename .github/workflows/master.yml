@@ -85,5 +85,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist
+          command: pages deploy dist --compatibility-flag=nodejs_compat_v2 --compatibility-date=2025-01-07
 
