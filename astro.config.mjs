@@ -21,6 +21,14 @@ export default defineConfig({
       "import.meta.env.SUPABASE_URL": JSON.stringify(env.SUPABASE_URL),
       "import.meta.env.SUPABASE_KEY": JSON.stringify(env.SUPABASE_KEY),
     },
+    ssr: {
+      // Externalize Node.js modules for Cloudflare Workers compatibility
+      external: ["node:buffer", "node:crypto"],
+    },
+    resolve: {
+      // Ensure React uses the correct server build for SSR
+      conditions: ["workerd", "worker", "node"],
+    },
   },
   adapter: cloudflare({
     imageService: "passthrough",
