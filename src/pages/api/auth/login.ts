@@ -7,7 +7,7 @@ const loginSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
     const body = await request.json();
 
@@ -22,7 +22,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     const { email, password } = validation.data;
 
-    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    const supabase = createSupabaseServerInstance({ 
+      cookies, 
+      headers: request.headers,
+      runtime: locals.runtime,
+    });
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,

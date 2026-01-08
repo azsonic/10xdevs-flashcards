@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "../../../db/supabase.client";
 
-export const POST: APIRoute = async ({ request, cookies, url }) => {
+export const POST: APIRoute = async ({ request, cookies, url, locals }) => {
   try {
     const { email } = await request.json();
 
@@ -11,7 +11,11 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
       });
     }
 
-    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+    const supabase = createSupabaseServerInstance({ 
+      cookies, 
+      headers: request.headers,
+      runtime: locals.runtime,
+    });
 
     // The redirect URL should be your callback route which will handle the code exchange
     // and then redirect the user to a password update page (not yet implemented)
