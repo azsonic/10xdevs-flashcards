@@ -22,12 +22,10 @@ export default defineConfig({
       "import.meta.env.SUPABASE_KEY": JSON.stringify(env.SUPABASE_KEY),
     },
     ssr: {
-      // Externalize Node.js modules for Cloudflare Workers compatibility
-      external: ["node:buffer", "node:crypto"],
-    },
-    resolve: {
-      // Ensure React uses the correct server build for SSR
-      conditions: ["workerd", "worker", "node"],
+      // Use workerd-compatible module resolution for SSR
+      resolve: {
+        conditions: ["workerd", "worker", "browser"],
+      },
     },
   },
   adapter: cloudflare({
