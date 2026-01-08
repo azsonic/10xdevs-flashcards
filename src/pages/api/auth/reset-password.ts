@@ -11,8 +11,8 @@ export const POST: APIRoute = async ({ request, cookies, url, locals }) => {
       });
     }
 
-    const supabase = createSupabaseServerInstance({ 
-      cookies, 
+    const supabase = createSupabaseServerInstance({
+      cookies,
       headers: request.headers,
       runtime: locals.runtime,
     });

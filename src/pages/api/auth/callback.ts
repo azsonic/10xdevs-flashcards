@@ -6,8 +6,8 @@ export const GET: APIRoute = async ({ url, cookies, redirect, request, locals })
   const next = url.searchParams.get("next") || "/";
 
   if (authCode) {
-    const supabase = createSupabaseServerInstance({ 
-      cookies, 
+    const supabase = createSupabaseServerInstance({
+      cookies,
       headers: request.headers,
       runtime: locals.runtime,
     });
