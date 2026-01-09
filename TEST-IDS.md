@@ -131,6 +131,37 @@ This document lists all `data-testid` attributes used in the application for Pla
 
 ---
 
+## UpdatePasswordForm Component (`src/components/auth/UpdatePasswordForm.tsx`)
+
+### Form Elements
+
+| Element                | Test ID                                  | Description                                    |
+| ---------------------- | ---------------------------------------- | ---------------------------------------------- |
+| Card container         | `update-password-card`                   | Main card container                            |
+| Title                  | `update-password-title`                  | "Update Password" heading                      |
+| Description            | `update-password-description`            | Form description text                          |
+| Form                   | `update-password-form`                   | The actual form element                        |
+| Password input         | `update-password-password-input`         | New password input field                       |
+| Confirm password input | `update-password-confirm-password-input` | Confirm new password field                     |
+| Submit button          | `update-password-submit-button`          | "Update Password" button                       |
+| Success card           | `update-password-success-card`           | Success message card shown after update        |
+
+### Error States
+
+| Element                | Test ID                                  | Description                  |
+| ---------------------- | ---------------------------------------- | ---------------------------- |
+| General error          | `update-password-error`                  | Server/network error message |
+| Password error         | `update-password-password-error`         | Password validation error    |
+| Confirm password error | `update-password-confirm-password-error` | Password match error         |
+
+### Loading States
+
+| Element         | Test ID                            | Description                     |
+| --------------- | ---------------------------------- | ------------------------------- |
+| Loading spinner | `update-password-loading-spinner`  | Spinner shown during submission |
+
+---
+
 ## Test Scenario Mapping
 
 ### Step 1: Click on "Sign up"

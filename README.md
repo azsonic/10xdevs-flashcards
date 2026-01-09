@@ -195,7 +195,7 @@ For detailed testing guides and best practices:
 
 The project has **completed its MVP (Minimum Viable Product)** phase. All core features have been implemented and tested:
 
-- ✅ User authentication (registration, login, logout)
+- ✅ User authentication (registration, login, logout, password reset)
 - ✅ AI-powered flashcard generation
 - ✅ Manual flashcard creation and management
 - ✅ Flashcard library with search and filtering
