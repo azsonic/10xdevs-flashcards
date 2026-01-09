@@ -22,6 +22,7 @@ export default defineConfig({
     define: {
       "import.meta.env.SUPABASE_URL": JSON.stringify(env.SUPABASE_URL),
       "import.meta.env.SUPABASE_KEY": JSON.stringify(env.SUPABASE_KEY),
+      "import.meta.env.E2E_TEST": JSON.stringify(env.E2E_TEST || ""),
     },
     resolve: {
       alias: isProduction

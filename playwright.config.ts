@@ -40,20 +40,15 @@ export default defineConfig({
   globalTeardown: "./e2e/global-teardown.ts",
 
   webServer: {
-    command: "npm run dev -- --port 3001",
+    // CI: env vars come from GitHub Secrets, no .env.test file exists
+    // Local: use dotenv-cli to load .env.test and set E2E_TEST flag
+    command: process.env.CI
+      ? "npm run dev -- --port 3001"
+      : "npx dotenv -e .env.test -v E2E_TEST=true -- npm run dev -- --port 3001",
     url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
-    env: {
-      // Pass test environment variables to the dev server
-      SUPABASE_URL: process.env.SUPABASE_URL ?? "",
-      SUPABASE_KEY: process.env.SUPABASE_KEY ?? "",
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
-      E2E_USERNAME: process.env.E2E_USERNAME ?? "",
-      E2E_PASSWORD: process.env.E2E_PASSWORD ?? "",
-      E2E_USERNAME_ID: process.env.E2E_USERNAME_ID ?? "",
-      E2E_AUTH_USERNAME: process.env.E2E_AUTH_USERNAME ?? "",
-      E2E_AUTH_PASSWORD: process.env.E2E_AUTH_PASSWORD ?? "",
-    },
+    // CI: pass all env vars from GitHub Secrets + E2E_TEST flag
+    env: process.env.CI ? { ...process.env, E2E_TEST: "true" } : undefined,
   },
 });
