@@ -17,11 +17,9 @@ export const POST: APIRoute = async ({ request, cookies, url, locals }) => {
       runtime: locals.runtime,
     });
 
-    // The redirect URL should be your callback route which will handle the code exchange
-    // and then redirect the user to a password update page (not yet implemented)
-    // For now, we'll point to the homepage or a placeholder.
-    // Ideally: `${url.origin}/api/auth/callback?next=/update-password`
-    const redirectTo = `${url.origin}/api/auth/callback?next=/`;
+    // The redirect URL points to the callback route which exchanges the code for a session
+    // and then redirects the user to the update-password page
+    const redirectTo = `${url.origin}/api/auth/callback?next=/update-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
