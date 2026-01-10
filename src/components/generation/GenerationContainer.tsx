@@ -129,7 +129,11 @@ export function GenerationContainer() {
       {step === "generating" && (
         <div className="mx-auto w-full max-w-3xl space-y-6">
           <SourceTextDisplay sourceText={sourceText} />
-          <GenerationLoader />
+          <GenerationLoader
+            title="Generating Flashcards..."
+            description="AI is analyzing your text and creating flashcards"
+            showTimer={true}
+          />
         </div>
       )}
       {step === "review" && (
@@ -137,7 +141,11 @@ export function GenerationContainer() {
       )}
       {step === "saving" && (
         <div className="flex items-center justify-center py-12">
-          <GenerationLoader />
+          <GenerationLoader
+            title="Saving Flashcards..."
+            description="Saving your flashcards to the library"
+            showTimer={false}
+          />
         </div>
       )}
     </div>
