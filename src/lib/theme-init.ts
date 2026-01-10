@@ -13,10 +13,6 @@ const storedTheme = localStorage.getItem("theme");
 const theme: Theme = isValidTheme(storedTheme) ? storedTheme : "system";
 
 const resolvedTheme =
-  theme === "system"
-    ? window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light"
-    : theme;
+  theme === "system" ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : theme;
 
 document.documentElement.classList.add(resolvedTheme);

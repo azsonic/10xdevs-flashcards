@@ -42,7 +42,7 @@ export function SearchInput({ value, onChange, onSubmit, disabled }: SearchInput
       hadFocus.current = false;
       return;
     }
-    
+
     // Otherwise, only sync if user doesn't have focus
     if (!hadFocus.current && value !== localValue) {
       setLocalValue(value);
@@ -55,7 +55,7 @@ export function SearchInput({ value, onChange, onSubmit, disabled }: SearchInput
     if (isClearing.current) {
       return;
     }
-    
+
     if (debouncedValue !== value) {
       onChange(debouncedValue);
     }
