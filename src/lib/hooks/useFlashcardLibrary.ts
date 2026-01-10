@@ -22,7 +22,7 @@ export function useFlashcardLibrary() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // UI state
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [loadingType, setLoadingType] = useState<LoadingType>(null);
   const [error, setError] = useState<string | null>(null);
 
