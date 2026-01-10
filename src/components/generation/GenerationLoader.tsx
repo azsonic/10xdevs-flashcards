@@ -1,20 +1,32 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+interface GenerationLoaderProps {
+  title?: string;
+  description?: string;
+  showTimer?: boolean;
+}
+
 /**
  * Visual feedback during the AI generation process.
  * Shows a loading spinner and elapsed time.
  */
-export function GenerationLoader() {
+export function GenerationLoader({
+  title = "Generating Flashcards...",
+  description = "AI is analyzing your text and creating flashcards",
+  showTimer = true,
+}: GenerationLoaderProps) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
+    if (!showTimer) return;
+
     const interval = setInterval(() => {
       setElapsed((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [showTimer]);
 
   const showTimeoutWarning = elapsed > 30;
 
@@ -25,17 +37,19 @@ export function GenerationLoader() {
       </div>
 
       <div className="space-y-2 text-center">
-        <h2 className="text-2xl font-semibold">Generating Flashcards...</h2>
-        <p className="text-muted-foreground">AI is analyzing your text and creating flashcards</p>
-        <div className="pt-2 text-sm text-muted-foreground">
-          {elapsed < 60 ? (
-            <>{elapsed}s</>
-          ) : (
-            <>
-              {Math.floor(elapsed / 60)}m {elapsed % 60}s
-            </>
-          )}
-        </div>
+        <h2 className="text-2xl font-semibold">{title}</h2>
+        <p className="text-muted-foreground">{description}</p>
+        {showTimer && (
+          <div className="pt-2 text-sm text-muted-foreground">
+            {elapsed < 60 ? (
+              <>{elapsed}s</>
+            ) : (
+              <>
+                {Math.floor(elapsed / 60)}m {elapsed % 60}s
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {showTimeoutWarning && (
