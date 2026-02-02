@@ -5,7 +5,7 @@ import type { FlashcardCandidateDto, GenerateFlashcardsResultDto } from "../type
 
 // Fallback to build-time env var for local development
 const BUILD_TIME_OPENROUTER_KEY = import.meta.env.OPENROUTER_API_KEY;
-const DEFAULT_MODEL = "mistralai/devstral-2512:free";
+const DEFAULT_MODEL = "openrouter/free";
 const GENERATION_TIMEOUT_MS = 30000; // 30 seconds
 
 // Runtime API key (set when called from API route with Cloudflare runtime)
